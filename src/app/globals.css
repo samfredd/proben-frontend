@@ -1,26 +1,161 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-primary: #0a1128;
+  --color-primary-dark: #060a1a;
+  --color-accent: #82C341;
+  --color-accent-light: #94d650;
+  --color-secondary-bg: #f0f9ff;
+  --color-text-main: #334155;
+  --color-overlay: color-mix(in srgb, #0a1128 60%, transparent);
+  --color-navbar-bg: rgba(10, 17, 40, 0.8);
+  
+  --color-navy-900: #0a1128;
+  --color-lime-500: #94d650;
+  --color-lime-600: #82c341;
+  --color-emerald-600: #059669; /* Keep for success states */
+  --color-slate-50: #f8fafc;
+  --color-slate-200: #e2e8f0;
+  
+  --animate-ripple: ripple 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-float-slow: float 7s ease-in-out infinite;
+  --animate-bounce-soft: bounce-soft 2.5s ease-in-out infinite;
+  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-blob: blob 7s infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes ripple {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); box-shadow: 0 8px 0 0 rgba(10,17,40,0.1), 0 16px 40px -8px rgba(10,17,40,0.12); }
+  50% { transform: scale(1.01); box-shadow: 0 12px 0 0 rgba(10,17,40,0.08), 0 24px 50px -4px rgba(10,17,40,0.15); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33% { transform: translateY(-12px) rotate(1deg); }
+  66% { transform: translateY(-6px) rotate(-1deg); }
+}
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-ripple {
+  animation: var(--animate-ripple);
+}
+
+.animate-float {
+  animation: var(--animate-float);
+}
+
+.animate-float-slow {
+  animation: var(--animate-float-slow);
+}
+
+.animate-bounce-soft {
+  animation: var(--animate-bounce-soft);
+}
+
+.animate-breathe {
+  animation: var(--animate-breathe);
+}
+
+.animate-blob {
+  animation: var(--animate-blob);
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-panel-dark {
+  background: rgba(10, 17, 40, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-header {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-sidebar {
+  background: rgba(10, 17, 40, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(130, 195, 65, 0.2);
+  box-shadow: 4px 0 24px -8px rgba(130, 195, 65, 0.1);
+}
+
+/* Claymorphism card shadow */
+.clay-card {
+  border-radius: 2rem;
+  box-shadow:
+    0 8px 0 0 rgba(10,17,40,0.10),
+    0 16px 40px -8px rgba(10,17,40,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.clay-card-accent {
+  border-radius: 2rem;
+  box-shadow:
+    0 8px 0 0 rgba(100,170,35,0.25),
+    0 16px 40px -8px rgba(130,195,65,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+}
+
+.clay-card-dark {
+  border-radius: 2rem;
+  box-shadow:
+    0 8px 0 0 rgba(6,10,26,0.40),
+    0 20px 50px -8px rgba(10,17,40,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-progress {
+  animation: progress 3s ease-in-out forwards;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out infinite;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply text-text-main;
+  }
 }
