@@ -13,7 +13,9 @@ import {
   ArrowUpRight,
   TrendingUp,
   Briefcase,
-  Clock
+  Clock,
+  UserPlus,
+  FileText
 } from 'lucide-react';
 import Link from 'next/link';
 import DashboardHeader from '@/components/layout/DashboardHeader';
@@ -30,46 +32,18 @@ export default function AdminDashboard() {
     unpaidInvoicesValue: 0
   });
 
-  const [recentBookings, setRecentBookings] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [bookingsRes, invoicesRes, organizationsRes, patientsRes, subscriptionsRes] = await Promise.all([
-          api.get('/bookings'),
-          api.get('/invoices'),
-          api.get('/organizations'),
-          api.get('/patients/mngmnt/by-client'),
-          api.get('/subscriptions')
-        ]);
+        const res = await api.get('/analytics/admin');
+        const { stats: newStats, recentActivity: newRecentActivity } = res.data;
 
-        const books = bookingsRes.data.bookings || [];
-        const invs = invoicesRes.data.invoices || [];
-        const orgs = organizationsRes.data || [];
-        const patientsByClient = patientsRes.data || [];
-        const subs = subscriptionsRes.data || [];
-
-        const pendingBooks = books.filter(b => b.status === 'pending').length;
-        const confirmedRev = invs.filter(i => i.status === 'paid').reduce((sum, val) => sum + parseFloat(val.amount_usd), 0);
-        const unpaidInvs = invs.filter(i => i.status === 'unpaid');
-        const unpaidValue = unpaidInvs.reduce((sum, val) => sum + parseFloat(val.amount_usd), 0);
-        
-        const totalPatientsCount = patientsByClient.reduce((sum, client) => sum + parseInt(client.patient_count || 0), 0);
-        const activeSubsCount = subs.filter(s => s.status === 'active').length;
-
-        setStats({
-          totalOrganizations: orgs.length,
-          totalPatients: totalPatientsCount,
-          activeSubscriptions: activeSubsCount,
-          monthlyRevenue: confirmedRev,
-          pendingBookings: pendingBooks,
-          unpaidInvoicesCount: unpaidInvs.length,
-          unpaidInvoicesValue: unpaidValue
-        });
-
-        setRecentBookings(books.slice(0, 8));
+        setStats(newStats);
+        setRecentActivity(newRecentActivity || []);
       } catch (err) {
         console.error('Error fetching dashboard summary:', err);
       } finally {
@@ -136,6 +110,26 @@ export default function AdminDashboard() {
       link: '/mngmnt/support'
     },
   ];
+
+  const getActivityIcon = (type) => {
+    switch (type) {
+      case 'booking': return <Calendar className="w-5 h-5 text-indigo-600" />;
+      case 'invoice': return <FileText className="w-5 h-5 text-lime-600" />;
+      case 'patient': return <Users className="w-5 h-5 text-blue-600" />;
+      case 'organization': return <Building2 className="w-5 h-5 text-purple-600" />;
+      default: return <Activity className="w-5 h-5 text-navy-900" />;
+    }
+  };
+
+  const getActivityColor = (type) => {
+    switch (type) {
+      case 'booking': return 'bg-indigo-50 border-indigo-100 group-hover:bg-indigo-100';
+      case 'invoice': return 'bg-lime-50 border-lime-100 group-hover:bg-lime-100';
+      case 'patient': return 'bg-blue-50 border-blue-100 group-hover:bg-blue-100';
+      case 'organization': return 'bg-purple-50 border-purple-100 group-hover:bg-purple-100';
+      default: return 'bg-gray-50 border-gray-100 group-hover:bg-white';
+    }
+  };
 
   return (
     <div className="flex-1 bg-transparent min-h-screen">
@@ -228,24 +222,33 @@ export default function AdminDashboard() {
                     <div className="w-8 h-8 border-4 border-lime-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Loading operations...</p>
                   </div>
-                ) : recentBookings.length === 0 ? (
+                ) : recentActivity.length === 0 ? (
                   <div className="p-12 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">No recent activity</div>
-                ) : recentBookings.map((appt) => (
-                  <div key={appt.id} className="p-5 flex items-center justify-between group hover:bg-gray-50/30 transition-colors">
+                ) : recentActivity.map((activity, i) => (
+                  <div key={`${activity.type}-${activity.id}-${i}`} className="p-5 flex items-center justify-between group hover:bg-gray-50/30 transition-colors">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-                        <Activity className="w-5 h-5 text-navy-900" />
+                      <div className={`w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 transition-colors ${getActivityColor(activity.type)}`}>
+                        {getActivityIcon(activity.type)}
                       </div>
                       <div>
-                        <h4 className="font-bold text-navy-900 tracking-tight truncate max-w-[200px]">{appt.organization_name}</h4>
-                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{appt.service_name}</p>
+                        <h4 className="font-bold text-navy-900 tracking-tight truncate max-w-[200px]">{activity.organization_name}</h4>
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">{activity.description}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-8">
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs font-bold text-navy-900 tracking-tight">{new Date(appt.booking_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mt-1 ${appt.status === 'confirmed' ? 'bg-lime-50 text-lime-600 border border-lime-100' : 'bg-gray-100 text-gray-400 border border-gray-200'}`}>
-                          {appt.status}
+                        <p className="text-xs font-bold text-navy-900 tracking-tight">
+                          {activity.reference_date 
+                            ? new Date(activity.reference_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+                            : 'N/A'
+                          }
+                        </p>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest mt-1 ${
+                          ['confirmed', 'paid', 'active'].includes(activity.status) ? 'bg-lime-50 text-lime-600 border border-lime-100' : 
+                          activity.status === 'pending' ? 'bg-orange-50 text-orange-600 border border-orange-100' :
+                          'bg-gray-100 text-gray-400 border border-gray-200'
+                        }`}>
+                          {activity.status || activity.type}
                         </span>
                       </div>
                     </div>
