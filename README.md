@@ -16,9 +16,25 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a local env file and point the frontend at the backend API:
+
+```bash
+cp .env.example .env
+```
+
+The default local backend URL is:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+This app expects the backend API under `/api/v1`, so keep `NEXT_PUBLIC_API_URL` set to the backend origin only.
+
+You can start editing the page by modifying `src/app/page.js`. The page auto-updates as you edit the file.
+
+The app uses local system fonts so it can build cleanly in offline or restricted environments.
 
 ## Learn More
 

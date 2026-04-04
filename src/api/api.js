@@ -1,4 +1,6 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+import { API_BASE_URL } from '@/config/env';
+
+const BASE_URL = API_BASE_URL;
 
 const getHeaders = (customHeaders = {}) => {
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -70,4 +72,3 @@ const api = {
 
 
 export default api;
-

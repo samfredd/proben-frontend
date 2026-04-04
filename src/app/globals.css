@@ -157,5 +157,6 @@
   }
   body {
     @apply text-text-main;
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   }
 }

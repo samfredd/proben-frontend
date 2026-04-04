@@ -1,5 +1,7 @@
+'use client';
+
 export const generateInvoice = async (transaction, user) => {
-  const { default: jsPDF } = await import('jspdf');
+  const { jsPDF } = await import('jspdf/dist/jspdf.es.min.js');
   const doc = new jsPDF();
   
   // Set up fonts and colors
