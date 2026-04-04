@@ -133,7 +133,7 @@ export default function AdminDashboard() {
       icon: Calendar, 
       color: 'text-rose-500', 
       bg: 'bg-rose-50',
-      link: '/mngmnt/bookings'
+      link: '/mngmnt/support'
     },
   ];
 
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                 <Clock className="w-5 h-5 text-lime-600" />
                 Operations Stream
               </h2>
-              <Link href="/mngmnt/bookings" className="text-[10px] font-black uppercase text-gray-400 hover:text-navy-900 tracking-widest transition-colors">
+              <Link href="/mngmnt/support" className="text-[10px] font-black uppercase text-gray-400 hover:text-navy-900 tracking-widest transition-colors">
                 View All Activity
               </Link>
             </div>
