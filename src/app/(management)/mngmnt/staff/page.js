@@ -16,13 +16,6 @@ import {
   Trash2,
   UserPlus,
   Users,
-  Activity,
-  ArrowRight,
-  ChevronRight,
-  TrendingUp,
-  LayoutGrid,
-  List,
-  Sparkles
 } from 'lucide-react';
 import DashboardHeader from '@/components/layout/DashboardHeader';
 import Modal from '@/components/ui/Modal';
@@ -30,10 +23,10 @@ import api from '@/api/api';
 import { useToast } from '@/context/ToastContext';
 
 const VIEW_OPTIONS = [
-  { value: 'all-staff', label: 'Grid View', icon: LayoutGrid },
-  { value: 'doctor-profiles', label: 'Detailed Profiles', icon: ShieldCheck },
-  { value: 'departments', label: 'By Dept.', icon: Building2 },
-  { value: 'shift-management', label: 'Shift Table', icon: List },
+  { value: 'all-staff', label: 'All Staff', icon: Users },
+  { value: 'doctor-profiles', label: 'Profiles', icon: ShieldCheck },
+  { value: 'departments', label: 'Departments', icon: Building2 },
+  { value: 'shift-management', label: 'Shifts', icon: CalendarClock },
 ];
 
 const STATUS_OPTIONS = [
@@ -59,6 +52,10 @@ async function requestStaffRecords() {
   return response.data.staff || [];
 }
 
+function formatStatusLabel(status = 'active') {
+  return status.replace(/_/g, ' ');
+}
+
 function getInitials(fullName = '') {
   return fullName
     .split(' ')
@@ -69,12 +66,14 @@ function getInitials(fullName = '') {
 }
 
 function Avatar({ member, size = 'md' }) {
-  const sizeClass = size === 'lg' ? 'w-20 h-20 text-xl rounded-v3xl' : 'w-12 h-12 text-sm rounded-2xl';
+  const sizeClass = size === 'lg' ? 'w-16 h-16 text-lg rounded-3xl' : 'w-12 h-12 text-sm rounded-2xl';
 
   if (member.avatar_url) {
     return (
       <div
-        className={`${sizeClass} border-2 border-white shadow-xl bg-cover bg-center shrink-0`}
+        role="img"
+        aria-label={`${member.full_name} avatar`}
+        className={`${sizeClass} border border-gray-100 bg-gray-50 bg-cover bg-center`}
         style={{ backgroundImage: `url("${member.avatar_url}")` }}
       />
     );
@@ -82,7 +81,7 @@ function Avatar({ member, size = 'md' }) {
 
   return (
     <div
-      className={`${sizeClass} shrink-0 bg-gradient-to-br from-navy-900 to-indigo-800 text-white flex items-center justify-center font-black tracking-tight shadow-lg border-2 border-white/20`}
+      className={`${sizeClass} shrink-0 bg-navy-900 text-white flex items-center justify-center font-black tracking-tight shadow-sm`}
     >
       {getInitials(member.full_name)}
     </div>
@@ -92,39 +91,427 @@ function Avatar({ member, size = 'md' }) {
 function StatusBadge({ status }) {
   const tone =
     status === 'active'
-      ? 'bg-lime-50 text-lime-600 border-lime-100 shadow-[0_0_12px_rgba(132,204,22,0.1)]'
+      ? 'bg-lime-50 text-lime-700 border-lime-100'
       : status === 'on_leave'
-        ? 'bg-amber-50 text-amber-600 border-amber-100'
-        : 'bg-gray-100 text-gray-400 border-gray-200';
+        ? 'bg-amber-50 text-amber-700 border-amber-100'
+        : 'bg-gray-100 text-gray-600 border-gray-200';
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] border ${tone}`}>
-      <span className={`w-1.5 h-1.5 rounded-full mr-2 ${status === 'active' ? 'bg-lime-500 animate-pulse' : 'bg-current'}`} />
-      {status.replace(/_/g, ' ')}
+    <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${tone}`}>
+      {formatStatusLabel(status)}
     </span>
   );
 }
 
-function SummaryCard({ icon: Icon, label, value, detail, accent = 'indigo' }) {
+function SummaryCard({ icon: Icon, label, value, detail }) {
   return (
-    <motion.div 
-      whileHover={{ y: -4 }}
-      className="glass-panel p-6 group cursor-default h-full flex flex-col justify-between"
-    >
-      <div className="flex justify-between items-start mb-6">
-        <div className={`w-10 h-10 rounded-xl bg-${accent}-50 flex items-center justify-center border border-${accent}-100 transition-colors group-hover:bg-${accent}-500/10`}>
-          <Icon className={`w-5 h-5 text-${accent}-600`} />
+    <div className="bg-white rounded-[2rem] border border-gray-50 p-6 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">{label}</p>
+          <p className="text-3xl font-black text-navy-900 tracking-tight mt-3">{value}</p>
+          <p className="text-xs font-bold text-gray-500 mt-2">{detail}</p>
         </div>
-        <Sparkles className="w-4 h-4 text-slate-200" />
-      </div>
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{label}</p>
-        <div className="flex items-baseline gap-2 mt-2">
-          <p className="text-3xl font-black text-navy-900 tracking-tighter">{value}</p>
-          <p className="text-[10px] font-bold text-slate-400">{detail}</p>
+        <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-navy-900">
+          <Icon className="w-5 h-5" />
         </div>
       </div>
-    </motion.div>
+    </div>
+  );
+}
+
+function ViewSwitcher({ currentView, onChange }) {
+  return (
+    <div className="inline-flex flex-wrap gap-2 rounded-[1.5rem] bg-gray-50 p-2 border border-gray-100">
+      {VIEW_OPTIONS.map((view) => {
+        const Icon = view.icon;
+        const isActive = currentView === view.value;
+
+        return (
+          <button
+            key={view.value}
+            type="button"
+            onClick={() => onChange(view.value)}
+            className={`px-4 py-3 rounded-[1rem] text-sm font-black tracking-tight transition-all flex items-center gap-2 ${
+              isActive ? 'bg-navy-900 text-white shadow-lg shadow-navy-900/10' : 'text-gray-500 hover:text-navy-900'
+            }`}
+          >
+            <Icon className="w-4 h-4" />
+            {view.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function EmptyState({ title, description, actionLabel, onAction }) {
+  return (
+    <div className="bg-gray-50/70 border border-dashed border-gray-200 rounded-[2rem] p-10 text-center">
+      <div className="w-14 h-14 rounded-2xl bg-white border border-gray-100 flex items-center justify-center mx-auto mb-5">
+        <Users className="w-6 h-6 text-gray-400" />
+      </div>
+      <h3 className="text-xl font-black text-navy-900 tracking-tight">{title}</h3>
+      <p className="text-sm text-gray-500 font-medium max-w-xl mx-auto mt-3">{description}</p>
+      {onAction ? (
+        <button
+          type="button"
+          onClick={onAction}
+          className="mt-6 px-6 py-3 rounded-2xl bg-navy-900 text-white font-black text-sm inline-flex items-center gap-2 hover:bg-navy-800 transition-colors"
+        >
+          <UserPlus className="w-4 h-4" />
+          {actionLabel}
+        </button>
+      ) : null}
+    </div>
+  );
+}
+
+function StaffFormModal({ isOpen, onClose, formState, onFieldChange, onSubmit, isSaving, isEditing }) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Edit Staff Member' : 'Add Staff Member'}>
+      <form onSubmit={onSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Full Name</span>
+            <input
+              required
+              value={formState.full_name}
+              onChange={(event) => onFieldChange('full_name', event.target.value)}
+              placeholder="Dr. Ada Okafor"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            />
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Role Title</span>
+            <input
+              required
+              value={formState.role_title}
+              onChange={(event) => onFieldChange('role_title', event.target.value)}
+              placeholder="Senior Consultant"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            />
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Department</span>
+            <input
+              required
+              value={formState.department}
+              onChange={(event) => onFieldChange('department', event.target.value)}
+              placeholder="Cardiology"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            />
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Status</span>
+            <select
+              value={formState.status}
+              onChange={(event) => onFieldChange('status', event.target.value)}
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            >
+              {STATUS_OPTIONS.slice(1).map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Email</span>
+            <input
+              required
+              type="email"
+              value={formState.email}
+              onChange={(event) => onFieldChange('email', event.target.value)}
+              placeholder="ada@probenn.com"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            />
+          </label>
+
+          <label className="space-y-2">
+            <span className="text-xs font-black uppercase tracking-widest text-navy-900">Phone</span>
+            <input
+              value={formState.phone}
+              onChange={(event) => onFieldChange('phone', event.target.value)}
+              placeholder="+1 555 014 2233"
+              className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+            />
+          </label>
+        </div>
+
+        <label className="space-y-2 block">
+          <span className="text-xs font-black uppercase tracking-widest text-navy-900">Shift Pattern</span>
+          <input
+            value={formState.shift_pattern}
+            onChange={(event) => onFieldChange('shift_pattern', event.target.value)}
+            placeholder="Mon-Fri, 9 AM - 5 PM"
+            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900"
+          />
+        </label>
+
+        <label className="space-y-2 block">
+          <span className="text-xs font-black uppercase tracking-widest text-navy-900">Profile Summary</span>
+          <textarea
+            rows="4"
+            value={formState.bio}
+            onChange={(event) => onFieldChange('bio', event.target.value)}
+            placeholder="Clinical focus, responsibilities, or notes for internal operations."
+            className="w-full px-5 py-4 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-navy-900 resize-none"
+          />
+        </label>
+
+        <div className="flex flex-col-reverse md:flex-row gap-3 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 px-5 py-4 rounded-2xl border border-gray-100 bg-white text-navy-900 font-black text-sm hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="flex-1 px-5 py-4 rounded-2xl bg-navy-900 text-white font-black text-sm hover:bg-navy-800 transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            {isSaving ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+            {isEditing ? 'Save Changes' : 'Create Staff Record'}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function StaffMemberCard({ member, onEdit, onDelete, actionId }) {
+  const deleting = actionId === member.id;
+
+  return (
+    <div className="bg-white rounded-[2rem] border border-gray-50 p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-4 min-w-0">
+          <Avatar member={member} size="lg" />
+          <div className="min-w-0">
+            <h3 className="text-lg font-black text-navy-900 tracking-tight truncate">{member.full_name}</h3>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">{member.role_title}</p>
+          </div>
+        </div>
+        <StatusBadge status={member.status} />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mt-6">
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Department</p>
+          <p className="text-sm font-black text-navy-900 mt-2">{member.department}</p>
+        </div>
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-4">
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Shift</p>
+          <p className="text-sm font-black text-navy-900 mt-2">{member.shift_pattern || 'Not assigned yet'}</p>
+        </div>
+      </div>
+
+      <div className="space-y-3 mt-6 text-sm">
+        <a href={`mailto:${member.email}`} className="flex items-center gap-3 text-navy-900 font-bold hover:text-navy-700 transition-colors">
+          <Mail className="w-4 h-4 text-gray-400" />
+          <span className="truncate">{member.email}</span>
+        </a>
+        <div className="flex items-center gap-3 text-gray-600 font-bold">
+          <Phone className="w-4 h-4 text-gray-400" />
+          <span>{member.phone || 'No phone number provided'}</span>
+        </div>
+      </div>
+
+      <div className="flex gap-3 mt-6">
+        <button
+          type="button"
+          onClick={() => onEdit(member)}
+          className="flex-1 px-4 py-3 rounded-2xl bg-navy-900 text-white text-sm font-black hover:bg-navy-800 transition-colors inline-flex items-center justify-center gap-2"
+        >
+          <PenSquare className="w-4 h-4" />
+          Edit
+        </button>
+        <button
+          type="button"
+          onClick={() => onDelete(member)}
+          disabled={deleting}
+          className="flex-1 px-4 py-3 rounded-2xl border border-gray-100 bg-white text-sm font-black text-navy-900 hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-60"
+        >
+          {deleting ? <LoaderCircle className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+          Remove
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function StaffProfileCard({ member, onEdit }) {
+  return (
+    <div className="bg-white rounded-[2.5rem] border border-gray-50 p-8 shadow-sm flex flex-col lg:flex-row gap-6 lg:items-start">
+      <Avatar member={member} size="lg" />
+      <div className="flex-1 min-w-0">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+          <div>
+            <h3 className="text-2xl font-black text-navy-900 tracking-tight">{member.full_name}</h3>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 mt-2">
+              {member.role_title} • {member.department}
+            </p>
+          </div>
+          <StatusBadge status={member.status} />
+        </div>
+
+        <div className="flex flex-wrap gap-3 mt-6">
+          <div className="px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs font-bold text-gray-600 flex items-center gap-2">
+            <Mail className="w-4 h-4 text-gray-400" />
+            {member.email}
+          </div>
+          <div className="px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs font-bold text-gray-600 flex items-center gap-2">
+            <Phone className="w-4 h-4 text-gray-400" />
+            {member.phone || 'No phone listed'}
+          </div>
+          <div className="px-4 py-3 rounded-2xl bg-gray-50 border border-gray-100 text-xs font-bold text-gray-600 flex items-center gap-2">
+            <CalendarClock className="w-4 h-4 text-gray-400" />
+            {member.shift_pattern || 'Shift not assigned yet'}
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-500 font-medium leading-relaxed mt-6">
+          {member.bio || 'No profile summary has been added for this staff member yet.'}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onEdit(member)}
+        className="px-6 py-4 rounded-2xl bg-navy-900 text-white font-black text-sm hover:bg-navy-800 transition-colors self-start inline-flex items-center gap-2"
+      >
+        <PenSquare className="w-4 h-4" />
+        Manage Record
+      </button>
+    </div>
+  );
+}
+
+function DepartmentCard({ department, members, onAddStaff }) {
+  const activeCount = members.filter((member) => member.status === 'active').length;
+  const coveredShifts = members.filter((member) => member.shift_pattern).length;
+
+  return (
+    <div className="bg-white rounded-[2rem] border border-gray-50 p-6 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <Building2 className="w-5 h-5" />
+        </div>
+        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+          {members.length} {members.length === 1 ? 'member' : 'members'}
+        </span>
+      </div>
+
+      <h3 className="text-xl font-black text-navy-900 tracking-tight mt-5">{department}</h3>
+      <p className="text-sm text-gray-500 font-medium mt-2">
+        {activeCount} active, {coveredShifts} with assigned shifts.
+      </p>
+
+      <div className="space-y-3 mt-6">
+        {members.slice(0, 4).map((member) => (
+          <div key={member.id} className="flex items-center justify-between gap-3 bg-gray-50 rounded-2xl border border-gray-100 p-3">
+            <div className="min-w-0">
+              <p className="text-sm font-black text-navy-900 truncate">{member.full_name}</p>
+              <p className="text-[11px] font-bold text-gray-500 truncate">{member.role_title}</p>
+            </div>
+            <StatusBadge status={member.status} />
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() => onAddStaff(department)}
+        className="w-full mt-6 px-4 py-3 rounded-2xl border border-gray-100 bg-white text-navy-900 text-sm font-black hover:bg-gray-50 transition-colors inline-flex items-center justify-center gap-2"
+      >
+        <Plus className="w-4 h-4" />
+        Add Staff To {department}
+      </button>
+    </div>
+  );
+}
+
+function ShiftTable({ staff, onEdit, onDelete, onQuickStatusChange, actionId }) {
+  return (
+    <div className="bg-white rounded-[2rem] border border-gray-50 shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-gray-50/80 text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-50">
+              <th className="px-6 py-5">Staff Member</th>
+              <th className="px-6 py-5">Role</th>
+              <th className="px-6 py-5">Department</th>
+              <th className="px-6 py-5">Shift Pattern</th>
+              <th className="px-6 py-5">Status</th>
+              <th className="px-6 py-5 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {staff.map((member) => {
+              const busy = actionId === member.id;
+
+              return (
+                <tr key={member.id} className="hover:bg-gray-50/40 transition-colors">
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3 min-w-[220px]">
+                      <Avatar member={member} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-black text-navy-900 truncate">{member.full_name}</p>
+                        <p className="text-xs font-bold text-gray-500 truncate">{member.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5 text-sm font-bold text-gray-600">{member.role_title}</td>
+                  <td className="px-6 py-5 text-sm font-bold text-gray-600">{member.department}</td>
+                  <td className="px-6 py-5 text-sm font-black text-navy-900">{member.shift_pattern || 'Not assigned yet'}</td>
+                  <td className="px-6 py-5">
+                    <select
+                      value={member.status}
+                      onChange={(event) => onQuickStatusChange(member, event.target.value)}
+                      disabled={busy}
+                      className="px-4 py-2 rounded-xl border border-gray-100 bg-white text-xs font-black uppercase tracking-widest text-navy-900 disabled:opacity-60"
+                    >
+                      {STATUS_OPTIONS.slice(1).map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onEdit(member)}
+                        className="px-4 py-2 rounded-xl bg-navy-900 text-white text-xs font-black hover:bg-navy-800 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => onDelete(member)}
+                        disabled={busy}
+                        className="px-4 py-2 rounded-xl border border-gray-100 bg-white text-xs font-black text-navy-900 hover:bg-gray-50 transition-colors disabled:opacity-60 inline-flex items-center gap-2"
+                      >
+                        {busy ? <LoaderCircle className="w-3.5 h-3.5 animate-spin" /> : null}
+                        Remove
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 
@@ -133,10 +520,15 @@ export default function StaffManagementPage() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  
+  const reportLoadError = useEffectEvent((message) => {
+    toast.error(message);
+  });
+
   const currentView = searchParams.get('view') || 'all-staff';
+
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [searchTerm, setSearchTerm] = useState('');
   const deferredSearchTerm = useDeferredValue(searchTerm);
@@ -148,274 +540,426 @@ export default function StaffManagementPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [actionId, setActionId] = useState('');
 
-  const loadStaff = async () => {
+  async function loadStaff({ initial = false } = {}) {
+    if (initial) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
+
     try {
-      const records = await requestStaffRecords();
+      const nextStaff = await requestStaffRecords();
+
       startTransition(() => {
-        setStaff(records);
+        setStaff(nextStaff);
       });
-    } catch (err) {
-      toast.error('Failed to sync intelligence pool');
+    } catch (error) {
+      toast.error(error.message || 'Failed to load staff records');
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }
 
-  useEffect(() => { loadStaff(); }, []);
+  useEffect(() => {
+    let isActive = true;
 
-  const handleViewChange = (v) => {
-    const p = new URLSearchParams(searchParams);
-    v === 'all-staff' ? p.delete('view') : p.set('view', v);
-    router.replace(`${pathname}?${p.toString()}`);
-  };
+    async function loadInitialStaff() {
+      setLoading(true);
 
-  const filteredStaff = staff.filter(s => {
-    const qs = deferredSearchTerm.toLowerCase();
-    const searchMatch = !qs || [s.full_name, s.role_title, s.department].some(v => v?.toLowerCase().includes(qs));
-    const statusMatch = statusFilter === 'all' || s.status === statusFilter;
-    const deptMatch = departmentFilter === 'all' || s.department === departmentFilter;
-    return searchMatch && statusMatch && deptMatch;
+      try {
+        const nextStaff = await requestStaffRecords();
+
+        if (!isActive) {
+          return;
+        }
+
+        startTransition(() => {
+          setStaff(nextStaff);
+        });
+      } catch (error) {
+        if (isActive) {
+          reportLoadError(error.message || 'Failed to load staff records');
+        }
+      } finally {
+        if (isActive) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      }
+    }
+
+    loadInitialStaff();
+
+    return () => {
+      isActive = false;
+    };
+  }, [startTransition]);
+
+  function handleViewChange(nextView) {
+    const nextParams = new URLSearchParams(searchParams.toString());
+
+    if (nextView === 'all-staff') {
+      nextParams.delete('view');
+    } else {
+      nextParams.set('view', nextView);
+    }
+
+    router.replace(`${pathname}${nextParams.toString() ? `?${nextParams}` : ''}`);
+  }
+
+  function openCreateModal(prefillDepartment = '') {
+    setEditingStaff(null);
+    setFormState({
+      ...EMPTY_FORM,
+      department: prefillDepartment || (departmentFilter !== 'all' ? departmentFilter : ''),
+    });
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(member) {
+    setEditingStaff(member);
+    setFormState({
+      full_name: member.full_name || '',
+      role_title: member.role_title || '',
+      department: member.department || '',
+      email: member.email || '',
+      phone: member.phone || '',
+      shift_pattern: member.shift_pattern || '',
+      status: member.status || 'active',
+      bio: member.bio || '',
+    });
+    setIsModalOpen(true);
+  }
+
+  function closeModal() {
+    setIsModalOpen(false);
+    setEditingStaff(null);
+    setFormState(EMPTY_FORM);
+  }
+
+  function updateFormField(field, value) {
+    setFormState((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setIsSaving(true);
+
+    try {
+      if (editingStaff) {
+        await api.put(`/staff/${editingStaff.id}`, formState);
+        toast.success(`${formState.full_name} updated successfully`);
+      } else {
+        await api.post('/staff', formState);
+        toast.success(`${formState.full_name} added to staff`);
+      }
+
+      closeModal();
+      await loadStaff();
+    } catch (error) {
+      toast.error(error.message || 'Failed to save staff member');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDelete(member) {
+    if (!window.confirm(`Remove ${member.full_name} from staff records?`)) {
+      return;
+    }
+
+    setActionId(member.id);
+
+    try {
+      await api.delete(`/staff/${member.id}`);
+      toast.success(`${member.full_name} removed`);
+      await loadStaff();
+    } catch (error) {
+      toast.error(error.message || 'Failed to remove staff member');
+    } finally {
+      setActionId('');
+    }
+  }
+
+  async function handleQuickStatusChange(member, nextStatus) {
+    if (nextStatus === member.status) {
+      return;
+    }
+
+    setActionId(member.id);
+
+    try {
+      await api.put(`/staff/${member.id}`, { status: nextStatus });
+      toast.success(`${member.full_name} marked as ${formatStatusLabel(nextStatus)}`);
+      await loadStaff();
+    } catch (error) {
+      toast.error(error.message || 'Failed to update staff status');
+    } finally {
+      setActionId('');
+    }
+  }
+
+  const departments = [...new Set(staff.map((member) => member.department).filter(Boolean))].sort((left, right) =>
+    left.localeCompare(right)
+  );
+  const normalizedQuery = deferredSearchTerm.trim().toLowerCase();
+
+  const filteredStaff = staff.filter((member) => {
+    const matchesSearch =
+      normalizedQuery.length === 0 ||
+      [member.full_name, member.role_title, member.department, member.email, member.phone, member.shift_pattern]
+        .filter(Boolean)
+        .some((value) => value.toLowerCase().includes(normalizedQuery));
+
+    const matchesStatus = statusFilter === 'all' || member.status === statusFilter;
+    const matchesDepartment = departmentFilter === 'all' || member.department === departmentFilter;
+
+    return matchesSearch && matchesStatus && matchesDepartment;
   });
 
-  const stats = [
-    { label: 'Personnel Base', value: staff.length, detail: 'Total Staff registered', icon: Users, accent: 'indigo' },
-    { label: 'Operational Hub', value: staff.filter(s => s.status === 'active').length, detail: 'Active & Deployed', icon: Activity, accent: 'lime' },
-    { label: 'Shift Coverage', value: `${Math.round((staff.filter(s => s.shift_pattern).length / (staff.length || 1)) * 100)}%`, detail: 'Assigned Rotations', icon: CalendarClock, accent: 'blue' },
-    { label: 'Growth Capacity', value: '88%', detail: 'Platform Scalability', icon: TrendingUp, accent: 'purple' },
-  ];
+  const departmentMap = new Map();
+  for (const member of filteredStaff) {
+    const key = member.department || 'Unassigned';
+    const existing = departmentMap.get(key);
+
+    if (existing) {
+      existing.members.push(member);
+    } else {
+      departmentMap.set(key, { department: key, members: [member] });
+    }
+  }
+
+  const departmentSummaries = [...departmentMap.values()].sort((left, right) =>
+    left.department.localeCompare(right.department)
+  );
+
+  const totalStaff = staff.length;
+  const activeStaff = staff.filter((member) => member.status === 'active').length;
+  const onLeaveStaff = staff.filter((member) => member.status === 'on_leave').length;
+  const unassignedShiftCount = staff.filter((member) => !member.shift_pattern).length;
+  const hasFilters = normalizedQuery.length > 0 || statusFilter !== 'all' || departmentFilter !== 'all';
+
+  let content = null;
+
+  if (loading) {
+    content = (
+      <div className="py-24 flex items-center justify-center">
+        <div className="inline-flex items-center gap-3 text-navy-900 font-black">
+          <LoaderCircle className="w-5 h-5 animate-spin" />
+          Loading staff records...
+        </div>
+      </div>
+    );
+  } else if (filteredStaff.length === 0) {
+    content = staff.length === 0 ? (
+      <EmptyState
+        title="No staff records yet"
+        description="Add your first staff member to start tracking departments, shifts, and internal profiles from one place."
+        actionLabel="Add Staff Member"
+        onAction={() => openCreateModal()}
+      />
+    ) : (
+      <EmptyState
+        title="No staff match these filters"
+        description="Try a different search term or reset the department and status filters to see more records."
+        actionLabel={hasFilters ? 'Clear Filters' : 'Add Staff Member'}
+        onAction={() => {
+          if (hasFilters) {
+            setSearchTerm('');
+            setStatusFilter('all');
+            setDepartmentFilter('all');
+            return;
+          }
+
+          openCreateModal();
+        }}
+      />
+    );
+  } else if (currentView === 'doctor-profiles') {
+    content = (
+      <div className="space-y-6">
+        {filteredStaff.map((member) => (
+          <StaffProfileCard key={member.id} member={member} onEdit={openEditModal} />
+        ))}
+      </div>
+    );
+  } else if (currentView === 'departments') {
+    content = (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {departmentSummaries.map((department) => (
+          <DepartmentCard
+            key={department.department}
+            department={department.department}
+            members={department.members}
+            onAddStaff={openCreateModal}
+          />
+        ))}
+      </div>
+    );
+  } else if (currentView === 'shift-management') {
+    content = (
+      <ShiftTable
+        staff={filteredStaff}
+        onEdit={openEditModal}
+        onDelete={handleDelete}
+        onQuickStatusChange={handleQuickStatusChange}
+        actionId={actionId}
+      />
+    );
+  } else {
+    content = (
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredStaff.map((member) => (
+          <StaffMemberCard
+            key={member.id}
+            member={member}
+            onEdit={openEditModal}
+            onDelete={handleDelete}
+            actionId={actionId}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 bg-transparent min-h-screen">
-      <DashboardHeader title="Staff Command" subtitle="Multi-tenant workforce and clinical resource management" />
+    <div className="flex-1 bg-[#fcfdfe] min-h-screen">
+      <DashboardHeader title="Staff Management" subtitle="Manage real staff records, department coverage, and shift assignments" />
 
-      <main className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-10 pb-20">
-        
-        {/* Executive Stats Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map(stat => (
-            <SummaryCard key={stat.label} {...stat} />
-          ))}
+      <main className="p-4 md:p-8 max-w-[1600px] mx-auto space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+          <SummaryCard
+            icon={Users}
+            label="Total Staff"
+            value={totalStaff}
+            detail={totalStaff === 1 ? '1 active record in your roster.' : `${totalStaff} records currently tracked.`}
+          />
+          <SummaryCard
+            icon={ShieldCheck}
+            label="Active Staff"
+            value={activeStaff}
+            detail={activeStaff === 1 ? '1 staff member currently active.' : `${activeStaff} staff members currently active.`}
+          />
+          <SummaryCard
+            icon={Building2}
+            label="Departments"
+            value={departments.length}
+            detail={departments.length === 0 ? 'No departments created yet.' : `${departments.length} departments represented in roster.`}
+          />
+          <SummaryCard
+            icon={CalendarClock}
+            label="Shift Gaps"
+            value={unassignedShiftCount}
+            detail={onLeaveStaff === 0 ? 'No one is currently on leave.' : `${onLeaveStaff} staff members are on leave.`}
+          />
         </div>
 
-        {/* Intelligence Filters & Toggle Row */}
-        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
-           <div className="flex flex-wrap items-center gap-2 rounded-3xl bg-slate-50/50 border border-slate-100 p-2 overflow-x-auto">
-              {VIEW_OPTIONS.map(opt => (
-                <button 
-                  key={opt.value}
-                  onClick={() => handleViewChange(opt.value)}
-                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[11px] font-black tracking-widest uppercase transition-all whitespace-nowrap ${
-                    currentView === opt.value ? 'bg-navy-900 text-white shadow-xl scale-105' : 'text-slate-400 hover:text-navy-900 hover:bg-white'
-                  }`}
-                >
-                  <opt.icon className="w-4 h-4" />
-                  {opt.label}
-                </button>
-              ))}
-           </div>
+        <section className="bg-white rounded-[2.5rem] border border-gray-50 shadow-sm p-6 md:p-8 space-y-6">
+          <div className="flex flex-col 2xl:flex-row 2xl:items-start 2xl:justify-between gap-5">
+            <div className="space-y-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">Roster Views</p>
+                <h2 className="text-2xl font-black text-navy-900 tracking-tight mt-2">Operations Console</h2>
+              </div>
+              <ViewSwitcher currentView={currentView} onChange={handleViewChange} />
+            </div>
 
-           <div className="flex flex-wrap items-center gap-4">
-              <div className="relative group">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-indigo-600 transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="Search intelligence records..." 
+            <div className="flex flex-col lg:flex-row gap-3 lg:items-center w-full 2xl:w-auto">
+              <div className="relative flex-1 min-w-[260px]">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-6 py-4 bg-white border border-slate-100 rounded-3xl w-full sm:w-[320px] outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-200 transition-all text-sm font-bold text-navy-900 placeholder:text-slate-300"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder="Search by name, role, email, or shift"
+                  className="w-full pl-11 pr-4 py-3 rounded-2xl border border-gray-100 bg-gray-50 focus:bg-white outline-none font-medium text-sm text-navy-900"
                 />
               </div>
-              <button 
-                onClick={() => { setEditingStaff(null); setFormState(EMPTY_FORM); setIsModalOpen(true); }}
-                className="px-8 py-4 bg-indigo-600 text-white rounded-3xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-3"
+
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold text-navy-900"
+              >
+                {STATUS_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={departmentFilter}
+                onChange={(event) => setDepartmentFilter(event.target.value)}
+                className="px-4 py-3 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold text-navy-900"
+              >
+                <option value="all">All departments</option>
+                {departments.map((department) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
+
+              {hasFilters ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('all');
+                    setDepartmentFilter('all');
+                  }}
+                  className="px-4 py-3 rounded-2xl border border-gray-100 bg-white text-sm font-black text-navy-900 hover:bg-gray-50 transition-colors"
+                >
+                  Clear
+                </button>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => openCreateModal()}
+                className="px-5 py-3 rounded-2xl bg-navy-900 text-white text-sm font-black hover:bg-navy-800 transition-colors inline-flex items-center justify-center gap-2"
               >
                 <UserPlus className="w-4 h-4" />
-                Deploy Personnel
+                Add Staff
               </button>
-           </div>
-        </div>
+            </div>
+          </div>
 
-        {/* Content Modules */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-40 flex flex-col items-center justify-center text-slate-400 font-black text-[10px] uppercase tracking-widest gap-4">
-               <LoaderCircle className="w-10 h-10 animate-spin text-indigo-600" />
-               Syncing Intelligence Records...
-             </motion.div>
-          ) : filteredStaff.length === 0 ? (
-             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="py-32 glass-panel flex flex-col items-center justify-center text-center">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-                  <Users className="w-10 h-10 text-slate-200" />
-                </div>
-                <h4 className="text-xl font-black text-navy-900 tracking-tight">No match found</h4>
-                <p className="text-sm font-bold text-slate-400 mt-2">Adjust your filters to reveal hidden personnel.</p>
-             </motion.div>
-          ) : (
-            <motion.div 
-               key={currentView + searchTerm} 
-               initial={{ opacity: 0, y: 10 }} 
-               animate={{ opacity: 1, y: 0 }}
-               className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+          {(refreshing || isPending) && !loading ? (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100 text-xs font-black uppercase tracking-widest text-gray-500">
+              <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+              Refreshing roster
+            </div>
+          ) : null}
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentView}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
             >
-               {currentView === 'all-staff' && filteredStaff.map((member, i) => (
-                 <motion.div 
-                    key={member.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: (i % 12) * 0.05 }}
-                    className="glass-panel p-8 group hover:-translate-y-2 transition-all duration-500 cursor-default"
-                 >
-                    <div className="flex justify-between items-start mb-8">
-                       <Avatar member={member} size="lg" />
-                       <StatusBadge status={member.status} />
-                    </div>
-                    <div className="space-y-1">
-                       <h4 className="text-xl font-black text-navy-900 tracking-tight group-hover:text-indigo-600 transition-colors uppercase">{member.full_name}</h4>
-                       <p className="text-[10px] font-black text-slate-400 tracking-[0.2em]">{member.role_title}</p>
-                    </div>
-
-                    <div className="mt-8 space-y-3">
-                       <div className="flex items-center gap-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 group-hover:bg-white transition-colors">
-                          <Building2 className="w-4 h-4 text-slate-300" />
-                          <span className="text-xs font-bold text-navy-900">{member.department}</span>
-                       </div>
-                       <div className="flex items-center gap-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100 group-hover:bg-white transition-colors">
-                          <CalendarClock className="w-4 h-4 text-slate-300" />
-                          <span className="text-xs font-bold text-navy-900 line-clamp-1">{member.shift_pattern || 'Operational flexibility'}</span>
-                       </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 mt-8">
-                       <button className="p-4 bg-navy-900 rounded-2xl flex items-center justify-center text-white hover:bg-indigo-600 transition-all shadow-lg active:scale-95">
-                          <PenSquare className="w-4 h-4" />
-                       </button>
-                       <button className="p-4 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-400 hover:text-rose-600 hover:border-rose-100 hover:bg-rose-50 transition-all active:scale-95">
-                          <Trash2 className="w-4 h-4" />
-                       </button>
-                    </div>
-                 </motion.div>
-               ))}
-
-               {currentView === 'doctor-profiles' && filteredStaff.map((member, i) => (
-                  <div key={member.id} className="col-span-full glass-panel p-10 flex flex-col lg:flex-row items-center lg:items-start gap-10">
-                     <Avatar member={member} size="lg" />
-                     <div className="flex-1 space-y-6 text-center lg:text-left">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                           <div>
-                              <h3 className="text-3xl font-black text-navy-900 tracking-tighter">{member.full_name}</h3>
-                              <p className="text-[10px] font-black text-indigo-600 tracking-[0.3em] mt-2">{member.role_title} — {member.department}</p>
-                           </div>
-                           <StatusBadge status={member.status} />
-                        </div>
-                        <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-4xl">{member.bio || 'Professional Intelligence Summary: Focuses on inter-departmental collaboration and B2B clinical excellence.'}</p>
-                        <div className="flex flex-wrap justify-center lg:justify-start gap-3">
-                           <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black text-slate-400"><Mail className="w-3.5 h-3.5" /> {member.email}</div>
-                           <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black text-slate-400"><Phone className="w-3.5 h-3.5" /> {member.phone}</div>
-                        </div>
-                     </div>
-                     <button className="px-6 py-4 bg-navy-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-xl">Profile Insights</button>
-                  </div>
-               ))}
-
-               {currentView === 'departments' && departmentSummaries.map((dept, i) => (
-                 <motion.div 
-                    key={dept.department}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="glass-panel p-8 group border-transparent hover:border-indigo-100 transition-all"
-                 >
-                    <div className="flex justify-between items-start mb-8">
-                       <div className="w-14 h-14 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-center">
-                          <Building2 className="w-6 h-6 text-indigo-600" />
-                       </div>
-                       <div className="px-3 py-1 bg-slate-50 text-[9px] font-black uppercase tracking-widest text-slate-400 rounded-full">
-                          {dept.members.length} Personnel
-                       </div>
-                    </div>
-                    <h4 className="text-xl font-black text-navy-900 tracking-tight uppercase mb-2">{dept.department}</h4>
-                    <p className="text-xs font-bold text-slate-400 mb-8">{dept.members.filter(m => m.status === 'active').length} Active members currently deployed.</p>
-                    
-                    <div className="space-y-3">
-                       {dept.members.slice(0, 3).map(m => (
-                         <div key={m.id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-black text-[10px] text-slate-300">
-                               {getInitials(m.full_name)}
-                            </div>
-                            <span className="text-xs font-bold text-navy-900 truncate">{m.full_name}</span>
-                         </div>
-                       ))}
-                    </div>
-
-                    <button className="w-full mt-8 py-4 border border-indigo-100 text-indigo-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-indigo-50 transition-all">
-                       View Resource Metrics
-                    </button>
-                 </motion.div>
-               ))}
-
-               {currentView === 'shift-management' && (
-                 <motion.div 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    className="col-span-full glass-panel overflow-hidden"
-                 >
-                    <div className="overflow-x-auto">
-                       <table className="w-full text-left">
-                          <thead>
-                             <tr className="bg-slate-50 text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">
-                                <th className="px-10 py-6">Intelligence Profile</th>
-                                <th className="px-10 py-6">Operation Base</th>
-                                <th className="px-10 py-6">Rotation Shift</th>
-                                <th className="px-10 py-6">Status Pool</th>
-                                <th className="px-10 py-6 text-right">Actions</th>
-                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-50">
-                             {filteredStaff.map(member => (
-                               <tr key={member.id} className="group hover:bg-slate-50/50 transition-colors">
-                                  <td className="px-10 py-6">
-                                     <div className="flex items-center gap-4">
-                                        <Avatar member={member} />
-                                        <div>
-                                           <p className="text-sm font-black text-navy-900 uppercase">{member.full_name}</p>
-                                           <p className="text-[10px] font-bold text-slate-400 mt-0.5">{member.role_title}</p>
-                                        </div>
-                                     </div>
-                                  </td>
-                                  <td className="px-10 py-6">
-                                     <span className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black uppercase">{member.department}</span>
-                                  </td>
-                                  <td className="px-10 py-6">
-                                     <div className="flex items-center gap-2 text-xs font-black text-navy-900">
-                                        <CalendarClock className="w-4 h-4 text-slate-200" />
-                                        {member.shift_pattern || 'FLEXIBLE'}
-                                     </div>
-                                  </td>
-                                  <td className="px-10 py-6">
-                                     <StatusBadge status={member.status} />
-                                  </td>
-                                  <td className="px-10 py-6 text-right">
-                                     <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button className="text-navy-900 hover:text-indigo-600 transition-colors"><PenSquare className="w-4 h-4" /></button>
-                                        <button className="text-slate-300 hover:text-rose-600 transition-colors"><Trash2 className="w-4 h-4" /></button>
-                                     </div>
-                                  </td>
-                               </tr>
-                             ))}
-                          </tbody>
-                       </table>
-                    </div>
-                 </motion.div>
-               )}
+              {content}
             </motion.div>
-          )}
-        </AnimatePresence>
-
+          </AnimatePresence>
+        </section>
       </main>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Personnel Deployment">
-         <div className="p-8 text-center text-slate-400 font-bold">Record Interface Ready...</div>
-      </Modal>
+      <StaffFormModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        formState={formState}
+        onFieldChange={updateFormField}
+        onSubmit={handleSubmit}
+        isSaving={isSaving}
+        isEditing={Boolean(editingStaff)}
+      />
     </div>
   );
 }

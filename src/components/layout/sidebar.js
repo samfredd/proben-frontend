@@ -20,8 +20,7 @@ import {
   Video,
   Clock,
   Activity,
-  Building2,
-  Sparkles
+  Building2
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -37,73 +36,74 @@ export default function Sidebar({ role }) {
 
   const adminLinks = [
     {
-      group: 'Intelligence',
+      group: 'Main',
       items: [
-        { name: 'Command Center', href: '/mngmnt/dashboard', icon: LayoutDashboard },
-        { name: 'Reports Hub', href: '/mngmnt/reports', icon: BarChart3 },
+        { name: 'Overview', href: '/mngmnt/dashboard', icon: LayoutDashboard },
+        { name: 'Reports', href: '/mngmnt/reports', icon: BarChart3 },
       ]
     },
     {
       group: 'Management',
       items: [
-        { name: 'Client Nodes', href: '/mngmnt/clients', icon: Building2 },
+        { name: 'Organization Clients', href: '/mngmnt/clients', icon: Building2 },
         { name: 'Patient Records', href: '/mngmnt/patients', icon: Activity },
-        { name: 'Expert Logistics', href: '/mngmnt/staff', icon: Users },
-        { name: 'Service Packages', href: '/mngmnt/subscription-packages', icon: Box },
+        { name: 'Expert Staff', href: '/mngmnt/staff', icon: Users },
+        { name: 'Subscription Packages', href: '/mngmnt/subscription-packages', icon: Box },
       ]
     },
     {
       group: 'Operations',
       items: [
-        { name: 'Clinical Flows', href: '/mngmnt/support', icon: Activity },
+        { name: 'Support Sessions', href: '/mngmnt/support', icon: Activity },
       ]
     },
     {
-      group: 'Fiscal Health',
+      group: 'Financial',
       items: [
-        { name: 'Ledger Arch', href: '/mngmnt/invoices', icon: FileText },
-        { name: 'Settlements', href: '/mngmnt/payments', icon: CreditCard },
-        { name: 'Term Subs', href: '/mngmnt/subscriptions', icon: Activity },
+        { name: 'Invoices', href: '/mngmnt/invoices', icon: FileText },
+        { name: 'Payments', href: '/mngmnt/payments', icon: CreditCard },
+        { name: 'Active Subscriptions', href: '/mngmnt/subscriptions', icon: Activity },
       ]
     },
     {
       group: 'System',
       items: [
-        { name: 'Control Plane', href: '/mngmnt/settings', icon: Settings },
+        { name: 'Settings', href: '/mngmnt/settings', icon: Settings },
       ]
     }
   ];
 
   const clientLinks = [
     {
-      group: 'Main Hub',
+      group: 'Main',
       items: [
-        { name: 'Concierge Portal', href: '/dashboard', icon: LayoutDashboard },
+        { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
       ]
     },
     {
       group: 'Healthcare',
       items: [
-        { name: 'Member Coordination', href: '/dashboard/patients', icon: Users },
-        { name: 'Expert Support', href: '/dashboard/support', icon: Activity },
+        { name: 'Patients', href: '/dashboard/patients', icon: Users },
+        { name: 'Support', href: '/dashboard/support', icon: Activity },
       ]
     },
     {
       group: 'Finance',
       items: [
-        { name: 'Fiscal Terminal', href: '/dashboard/payments', icon: CreditCard },
+        { name: 'Billing Hub', href: '/dashboard/payments', icon: CreditCard },
       ]
     },
     {
       group: 'Account',
       items: [
-        { name: 'Local Config', href: '/dashboard/settings', icon: Settings },
+        { name: 'Settings', href: '/dashboard/settings', icon: Settings },
       ]
     }
   ];
 
   const activeLinkGroups = role === 'admin' ? adminLinks : clientLinks;
-  const brandName = role === 'admin' ? 'Proben Elite' : 'Proben Concierge';
+
+  const brandName = role === 'admin' ? 'Proben Admin' : 'Proben Client';
 
   return (
     <>
@@ -114,7 +114,7 @@ export default function Sidebar({ role }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={close}
-            className="fixed inset-0 bg-navy-900/60 backdrop-blur-md z-30 lg:hidden"
+            className="fixed inset-0 bg-navy-900/40 backdrop-blur-sm z-30 lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -122,117 +122,113 @@ export default function Sidebar({ role }) {
       <motion.div
         initial={false}
         animate={{ 
-          width: isCollapsed ? 100 : 300,
-          x: isOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 1024 ? -300 : 0)
+          width: isCollapsed ? 88 : 288,
+          x: isOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 1024 ? -288 : 0)
         }}
-        transition={{ type: 'spring', damping: 28, stiffness: 180 }}
-        className={`glass-card-saturated-dark flex flex-col h-screen fixed inset-y-0 left-0 z-40 lg:fixed lg:top-0 shrink-0 shadow-2xl overflow-hidden self-start border-r border-white/5`}
+        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+        className={`glass-sidebar flex flex-col h-screen fixed inset-y-0 left-0 z-40 lg:fixed lg:top-0 shrink-0 shadow-sm overflow-hidden self-start ${
+          isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
       >
-        <div className={`p-8 pb-4 flex items-center ${isCollapsed ? 'justify-center' : 'gap-4'}`}>
-          <div className="relative w-12 h-12 shrink-0 glass-panel-dark bg-white/10 rounded-[1.25rem] border border-white/20 flex items-center justify-center p-2.5">
-            <Image 
-              src="/logo.png" 
-              alt="Proben Logo" 
-              width={40}
-              height={40}
-              className="object-contain" 
-              priority 
-            />
-          </div>
-          <AnimatePresence mode="wait">
+      <div className={`p-6 flex items-center ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
+        <div className="relative w-10 h-10 shrink-0">
+          <Image 
+            src="/logo.png" 
+            alt="Proben Logo" 
+            fill 
+            sizes="40px"
+            className="object-contain" 
+            priority 
+          />
+        </div>
+        <AnimatePresence mode="wait">
+          {!isCollapsed && (
+            <motion.div
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h1 className="text-sm font-bold text-white leading-none truncate w-32">{brandName}</h1>
+              <p className="text-[10px] text-white/40 mt-1 font-medium italic">Healthcare Management</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <nav className="flex-1 px-4 py-4 space-y-6 overflow-y-auto overflow-x-hidden">
+        {activeLinkGroups.map((group) => (
+          <div key={group.group} className="space-y-1">
             {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
-                className="min-w-0"
-              >
-                <h1 className="text-sm font-black text-white tracking-widest uppercase leading-none truncate w-32">{brandName}</h1>
-                <div className="flex items-center gap-1.5 mt-1.5">
-                   <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-                   <p className="text-[9px] text-white/40 font-black uppercase tracking-widest">Authorized Access</p>
-                </div>
-              </motion.div>
+              <h3 className="px-4 text-[10px] font-black uppercase text-lime-500/50 tracking-[0.2em] mb-3">
+                {group.group}
+              </h3>
             )}
-          </AnimatePresence>
-        </div>
-
-        <nav className="flex-1 px-5 py-8 space-y-10 overflow-y-auto scrollbar-hide">
-          {activeLinkGroups.map((group) => (
-            <div key={group.group} className="space-y-2">
-              {!isCollapsed && (
-                <h3 className="px-5 text-[9px] font-black uppercase text-accent/40 tracking-[0.3em] mb-4">
-                  {group.group}
-                </h3>
-              )}
-              <div className="space-y-1">
-                {group.items.map((link) => {
-                  const isActive = pathname === link.href;
-                  return (
-                    <div key={link.name}>
-                      <Link
-                        href={link.href}
-                        className={`flex items-center px-5 py-4 transition-all group relative ${isCollapsed ? 'justify-center' : 'justify-between'} ${
-                          isActive 
-                            ? 'glass-card-saturated bg-white/10 text-white z-10 shadow-xl' 
-                            : 'text-white/40 hover:text-white/80 hover:bg-white/5'
-                        }`}
-                        style={{ borderRadius: '1.25rem' }}
-                      >
-                        <div className="flex items-center min-w-0">
-                          <link.icon className={`h-5 w-5 shrink-0 transition-all duration-300 ${
-                            isActive ? 'text-accent scale-110 drop-shadow-[0_0_8px_rgba(130,195,65,0.6)]' : 'group-hover:text-accent group-hover:scale-105'
-                          } ${isCollapsed ? 'mr-0' : 'mr-4'}`} />
-                          <AnimatePresence mode="wait">
-                            {!isCollapsed && (
-                              <motion.span
-                                initial={{ opacity: 0, x: -5 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: -5 }}
-                                className="text-xs font-black tracking-widest uppercase truncate"
-                              >
-                                {link.name}
-                              </motion.span>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                        {!isCollapsed && isActive && (
-                          <motion.div layoutId="activeArrow" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                             <Sparkles className="w-3 h-3 text-accent animate-pulse" />
-                          </motion.div>
+            {group.items.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <div key={link.name}>
+                  <Link
+                    href={link.href}
+                    className={`flex items-center px-4 py-3 transition-all group relative ${isCollapsed ? 'justify-center' : 'justify-between'} ${
+                      isActive 
+                        ? 'clay-card-accent bg-accent text-primary z-10' 
+                        : 'text-white/60 hover:text-white'
+                    }`}
+                    style={{ borderRadius: '1rem' }}
+                  >
+                    <div className="flex items-center min-w-0">
+                      <link.icon className={`h-5 w-5 shrink-0 transition-colors ${
+                        isActive ? 'text-primary' : 'group-hover:text-lime-600'
+                      } ${isCollapsed ? 'mr-0' : 'mr-3'}`} />
+                      <AnimatePresence mode="wait">
+                        {!isCollapsed && (
+                          <motion.span
+                            initial={{ opacity: 0, x: -5 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -5 }}
+                            className="text-sm font-bold tracking-tight truncate"
+                          >
+                            {link.name}
+                          </motion.span>
                         )}
-                      </Link>
+                      </AnimatePresence>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
+                    {!isCollapsed && isActive && (
+                      <motion.div layoutId="activeArrow" initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                        <ChevronDown className="w-4 h-4 -rotate-90 text-primary/40" />
+                      </motion.div>
+                    )}
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
 
-        <div className="p-6 space-y-3 bg-black/20 border-t border-white/5">
-          <button
-            onClick={toggleCollapse}
-            className={`flex items-center w-full px-5 py-4 text-white/30 hover:text-white transition-all group ${isCollapsed ? 'justify-center' : ''
-              } bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5`}
-          >
-            <div className={`transition-transform duration-500 ${isCollapsed ? 'rotate-180' : ''}`}>
-              <ChevronLeft className="h-5 w-5 shrink-0" />
-            </div>
-            {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest ml-4">Consolidate View</span>}
-          </button>
-          
-          <button
-            onClick={logout}
-            className={`flex items-center w-full px-5 py-4 text-red-400/60 hover:text-red-400 transition-all group ${isCollapsed ? 'justify-center' : ''
-              } bg-red-500/5 hover:bg-red-500/10 rounded-2xl border border-red-500/10`}
-          >
-            <LogOut className="h-5 w-5 shrink-0 group-hover:translate-x-1 transition-transform" />
-            {!isCollapsed && <span className="text-[10px] font-black uppercase tracking-widest ml-4">Terminal Session Exit</span>}
-          </button>
-        </div>
-      </motion.div>
+      <div className="p-4 border-t border-gray-50 space-y-2">
+        <button
+          onClick={toggleCollapse}
+          className={`flex items-center w-full px-4 py-3 text-white/40 hover:text-white transition-colors group ${isCollapsed ? 'justify-center' : ''
+            }`}
+        >
+          <div className={`transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+            <ChevronLeft className="h-5 w-5 shrink-0" />
+          </div>
+          {!isCollapsed && <span className="text-sm font-bold tracking-tight ml-3 text-white/60 hover:text-white">Collapse</span>}
+        </button>
+        <button
+          onClick={logout}
+          className={`flex items-center w-full px-4 py-3 text-red-400 hover:text-red-600 transition-colors group ${isCollapsed ? 'justify-center' : ''
+            }`}
+        >
+          <LogOut className="h-5 w-5 shrink-0" />
+          {!isCollapsed && <span className="text-sm font-bold tracking-tight ml-3">Logout</span>}
+        </button>
+      </div>
+    </motion.div>
     </>
   );
 }
+

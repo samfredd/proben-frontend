@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Sun, Moon, Bell, Search, Menu, LogOut, Settings, User, ChevronDown, CheckCircle, Activity, CreditCard, Building2, Users, Star, Sparkles, Shield } from 'lucide-react';
+import { Sun, Moon, Bell, Search, Menu, LogOut, Settings, User, ChevronDown, CheckCircle, Activity, CreditCard, Building2, Users, Star } from 'lucide-react';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -61,62 +61,65 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
   const initials = (user?.organization_name || user?.email)?.substring(0, 2).toUpperCase() || 'US';
 
   const quickLinks = isAdmin ? [
-    { label: 'Client Nodes', href: '/mngmnt/clients', icon: Building2 },
-    { label: 'Record Hub', href: '/mngmnt/patients', icon: Users },
-    { label: 'Fiscal View', href: '/mngmnt/payments', icon: CreditCard },
+    { label: 'Organizations', href: '/mngmnt/clients', icon: Building2 },
+    { label: 'Patient Directory', href: '/mngmnt/patients', icon: Users },
+    { label: 'Financials', href: '/mngmnt/payments', icon: CreditCard },
   ] : [
     { label: 'My Patients', href: '/dashboard/patients', icon: Users },
-    { label: 'Support Flow', href: '/dashboard/support', icon: Activity },
-    { label: 'Tier Status', href: '/dashboard/subscriptions', icon: Star },
+    { label: 'Support Center', href: '/dashboard/support', icon: Activity },
+    { label: 'Subscription', href: '/dashboard/subscriptions', icon: Star },
   ];
 
   const mockNotifs = [
-    { id: 1, title: 'Network Event', desc: 'Clinical Review Settled', time: '2m ago', icon: Sparkles, accent: 'accent' },
-    { id: 2, title: 'Inbound Sync', desc: 'Member Record Updated', time: '1h ago', icon: Activity, accent: 'blue' },
-    { id: 3, title: 'Fiscal Pulse', desc: 'Ledger Item Verified', time: '3h ago', icon: Shield, accent: 'lime' },
+    { id: 1, title: 'Session Confirmed', time: '2m ago', icon: CheckCircle, color: 'text-green-500' },
+    { id: 2, title: 'New Message', time: '1h ago', icon: Activity, color: 'text-blue-500' },
+    { id: 3, title: 'Invoice Pending', time: '3h ago', icon: CreditCard, color: 'text-orange-500' },
   ];
 
   return (
-    <header className="glass-header flex items-center justify-between p-6 md:p-8 sticky top-0 z-40 border-b border-slate-200/50">
-      <div className="flex items-center gap-6 min-w-0">
+    <header className="glass-header flex items-center justify-between p-4 md:p-8 sticky top-0 z-40">
+      <div className="flex items-center gap-3 md:gap-4 min-w-0">
         <button 
           onClick={toggle}
           type="button"
-          className="lg:hidden p-3 bg-white/50 backdrop-blur-md border border-slate-100 rounded-2xl text-navy-900 hover:bg-white transition-all shadow-sm"
+          className="lg:hidden p-2 bg-gray-50 border border-gray-100 rounded-xl text-navy-900 hover:bg-gray-100 transition-all"
         >
-          <Menu className="w-6 h-6 text-accent" />
+          <Menu className="w-5 h-5" />
         </button>
         <div className="truncate">
-          <div className="flex items-center gap-2 mb-1">
-             <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-             <span className="text-[9px] font-black uppercase text-slate-400 tracking-[0.3em]">Authorized Terminal</span>
-          </div>
-          <h1 className="text-xl md:text-3xl font-black text-navy-900 tracking-tighter truncate">{title}</h1>
+          <h1 className="text-lg md:text-2xl font-bold text-navy-900 tracking-tight truncate">{title}</h1>
+          <p className="text-gray-400 text-[10px] md:text-sm font-medium mt-0.5 truncate hidden sm:block">{subtitle}</p>
         </div>
       </div>
 
-      <div className="flex items-center gap-4 md:gap-8">
+      <div className="flex items-center gap-2 md:gap-6">
         {/* Search Trigger */}
         <button 
           onClick={() => setIsSearchOpen(true)}
-          className="hidden lg:flex items-center bg-gray-50/50 backdrop-blur-md px-5 py-3 rounded-2xl border border-slate-200/50 hover:border-accent hover:ring-4 hover:ring-accent/5 transition-all w-64 text-left group shadow-sm"
+          className="hidden lg:flex items-center bg-gray-50 px-4 py-2 rounded-xl border border-gray-100 hover:border-accent hover:ring-2 hover:ring-accent/10 transition-all w-48 text-left group"
         >
-          <Search className="w-4 h-4 text-slate-400 mr-3 group-hover:text-accent transition-colors" />
-          <span className="text-xs font-black uppercase text-slate-400 tracking-widest">Search Intelligence...</span>
-          <div className="ml-auto flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-white border border-slate-100 text-[10px] font-black text-slate-300">
+          <Search className="w-4 h-4 text-gray-400 mr-2 group-hover:text-accent transition-colors" />
+          <span className="text-sm font-medium text-gray-400">Search hub...</span>
+          <div className="ml-auto flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white border border-gray-100 text-[9px] font-black text-gray-400">
             <span>⌘</span>
             <span>K</span>
           </div>
         </button>
 
-        <div className="flex items-center gap-2 md:gap-5 md:border-l md:border-slate-100 md:pl-8">
-          {/* Theme Toggle */}
+        <div className="flex items-center gap-2 md:gap-4 md:border-l md:border-gray-100 md:pl-6">
+          {/* Status */}
+          <div className="hidden xs:flex items-center gap-2 bg-green-50 px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-green-100">
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-accent animate-pulse"></div>
+            <span className="text-[8px] md:text-[10px] font-bold text-green-700 uppercase tracking-widest leading-none">Live</span>
+          </div>
+
+          {/* Theme */}
           <button 
             type="button" 
             onClick={toggleTheme} 
-            className="p-3 bg-white/50 backdrop-blur-md border border-slate-100 rounded-2xl text-slate-400 hover:text-accent transition-all hover:scale-105 active:scale-95 shadow-sm"
+            className="p-2 md:p-2.5 bg-gray-50 border border-gray-100 rounded-xl text-gray-500 hover:text-navy-900 transition-colors"
           >
-            {theme === 'light' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-accent" />}
+            {theme === 'light' ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5 text-accent" />}
           </button>
 
           {/* Notifications */}
@@ -124,37 +127,36 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
             <button 
               type="button" 
               onClick={() => setIsNotifOpen(!isNotifOpen)} 
-              className={`p-3 border rounded-2xl transition-all relative shadow-sm ${isNotifOpen ? 'bg-navy-900 text-accent border-navy-900' : 'bg-white/50 text-slate-400 border-slate-100 hover:text-accent'}`}
+              className={`p-2 md:p-2.5 border rounded-xl transition-all relative ${isNotifOpen ? 'bg-navy-900 text-accent border-navy-900' : 'bg-gray-50 text-gray-500 border-gray-100 hover:text-navy-900'}`}
             >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-accent border-2 border-white rounded-full shadow-[0_0_8px_rgba(130,195,65,0.8)]"></span>
+              <Bell className="w-4 h-4 md:w-5 md:h-5" />
+              <span className="absolute top-2 right-2 md:top-2.5 md:right-2.5 w-1.5 h-1.5 md:w-2 md:h-2 bg-red-500 border-2 border-white rounded-full"></span>
             </button>
 
             <AnimatePresence>
               {isNotifOpen && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                  className="absolute right-0 mt-5 w-80 glass-card-saturated bg-white/95 border border-slate-200/50 shadow-2xl overflow-hidden rounded-[2.5rem]"
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-3 w-72 clay-card bg-white border border-gray-100 shadow-xl overflow-hidden"
                 >
-                  <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-navy-900">Intelligence Stream</span>
-                    <span className="text-[9px] bg-accent text-primary px-2.5 py-1 rounded-full font-black uppercase tracking-widest">3 Active</span>
+                  <div className="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <span className="text-xs font-black uppercase tracking-widest text-navy-900">Notifications</span>
+                    <span className="text-[10px] bg-accent/20 text-accent px-2 py-0.5 rounded-full font-bold">3 New</span>
                   </div>
-                  <div className="max-h-80 overflow-y-auto p-2">
+                  <div className="max-h-64 overflow-y-auto">
                     {mockNotifs.map(n => (
-                      <div key={n.id} className="p-5 hover:bg-slate-50/80 rounded-2xl transition-all flex items-center gap-4 cursor-pointer group">
-                        <div className={`w-10 h-10 rounded-xl bg-${n.accent}/10 flex items-center justify-center text-${n.accent} group-hover:scale-110 transition-transform`}><n.icon className="w-5 h-5" /></div>
+                      <div key={n.id} className="p-4 hover:bg-gray-50 transition-colors flex items-center gap-3 cursor-pointer">
+                        <div className={`w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center ${n.color}`}><n.icon className="w-4 h-4" /></div>
                         <div>
-                          <p className="text-xs font-black text-navy-900 uppercase tracking-widest truncate">{n.title}</p>
-                          <p className="text-[10px] text-slate-400 font-bold mt-0.5 line-clamp-1">{n.desc}</p>
-                          <p className="text-[9px] text-slate-300 font-black uppercase tracking-tighter mt-1">{n.time}</p>
+                          <p className="text-sm font-bold text-navy-900">{n.title}</p>
+                          <p className="text-[10px] text-gray-400 font-medium">{n.time}</p>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <button className="w-full py-4 bg-navy-900 text-[10px] font-black uppercase tracking-[0.3em] text-accent hover:text-white transition-colors">Operational Archive</button>
+                  <button className="w-full py-3 bg-gray-50 text-[10px] font-black uppercase tracking-widest text-navy-400 hover:text-navy-900 transition-colors">View All Activity</button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -164,47 +166,47 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
           <div className="relative" ref={userMenuRef}>
             <button 
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-white/50 transition-all border border-transparent hover:border-slate-200/50 hover:shadow-sm group"
+              className="flex items-center gap-2 md:gap-3 p-1 rounded-xl hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-[1.25rem] bg-navy-900 text-accent flex items-center justify-center font-black text-sm md:text-md shadow-xl ring-4 ring-accent/10 group-hover:ring-accent/20 transition-all">
+              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-primary text-accent flex items-center justify-center font-black text-xs md:text-sm shadow-sm ring-2 ring-accent/5">
                 {initials}
               </div>
-              <ChevronDown className={`w-4 h-4 text-slate-400 transition-all duration-300 hidden sm:block ${isUserMenuOpen ? 'rotate-180 text-accent' : ''}`} />
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform hidden sm:block ${isUserMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
               {isUserMenuOpen && (
                 <motion.div 
-                  initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 15, scale: 0.95 }}
-                  className="absolute right-0 mt-5 w-64 glass-card-saturated bg-white/95 border border-slate-200/50 shadow-2xl overflow-hidden rounded-[2.5rem]"
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 mt-3 w-56 clay-card bg-white border border-gray-100 shadow-xl overflow-hidden"
                 >
-                  <div className="p-6 bg-navy-900 border-b border-white/5">
-                    <p className="text-sm font-black text-white truncate tracking-tight mb-1">{user?.organization_name || user?.email}</p>
-                    <span className="inline-block px-2.5 py-1 bg-accent/20 text-accent text-[9px] font-black uppercase tracking-[0.2em] rounded-md border border-accent/20">
-                      {user?.role === 'admin' ? 'Strategic Admin' : 'Concierge Partner'}
+                  <div className="p-4 bg-gray-50/50 border-b border-gray-100">
+                    <p className="text-sm font-black text-navy-900 truncate tracking-tight">{user?.organization_name || user?.email}</p>
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-accent/20 text-accent text-[9px] font-black uppercase tracking-widest rounded-md border border-accent/20">
+                      {user?.role === 'admin' ? 'Administrator' : 'Partner Account'}
                     </span>
                   </div>
-                  <div className="p-3 space-y-1">
+                  <div className="p-2">
                     <Link href={settingsPath} onClick={() => setIsUserMenuOpen(false)}>
-                      <button className="w-full flex items-center gap-4 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-navy-900 rounded-2xl transition-all group text-left">
-                        <Settings className="w-4 h-4 text-slate-300 group-hover:text-accent group-hover:rotate-45 transition-all" />
-                        Control Hub
+                      <button className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-navy-900 rounded-lg transition-colors group text-left">
+                        <Settings className="w-4 h-4 text-gray-400 group-hover:text-accent transition-colors" />
+                        Management
                       </button>
                     </Link>
-                    <button onClick={() => setIsUserMenuOpen(false)} className="w-full flex items-center gap-4 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 hover:text-navy-900 rounded-2xl transition-all group text-left">
-                      <User className="w-4 h-4 text-slate-300 group-hover:text-accent transition-all" />
-                      Profile Arch
+                    <button onClick={() => setIsUserMenuOpen(false)} className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-50 hover:text-navy-900 rounded-lg transition-colors group text-left">
+                      <User className="w-4 h-4 text-gray-400 group-hover:text-accent transition-colors" />
+                      Account Settings
                     </button>
                   </div>
-                  <div className="p-3 border-t border-slate-100 bg-slate-50/50">
+                  <div className="p-2 border-t border-gray-100 bg-gray-50/30">
                     <button 
                       onClick={() => { logout(); setIsUserMenuOpen(false); }}
-                      className="w-full flex items-center gap-4 px-4 py-3 text-xs font-black uppercase tracking-widest text-red-500 hover:bg-red-50 rounded-2xl transition-all group text-left"
+                      className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-black text-red-500 hover:bg-red-50 rounded-lg transition-colors group text-left"
                     >
-                      <LogOut className="w-4 h-4 text-red-400 group-hover:translate-x-1 transition-all" />
-                      End Session
+                      <LogOut className="w-4 h-4 text-red-400 group-hover:rotate-12 transition-transform" />
+                      Sign Out
                     </button>
                   </div>
                 </motion.div>
@@ -217,49 +219,49 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
       {/* Command Palette Overlay */}
       <AnimatePresence>
         {isSearchOpen && (
-          <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh] px-4">
+          <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[10vh] px-4">
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setIsSearchOpen(false)}
-              className="absolute inset-0 bg-navy-900/80 backdrop-blur-md"
+              className="absolute inset-0 bg-navy-900/60 backdrop-blur-sm"
             />
             
             <motion.div 
-              initial={{ opacity: 0, y: -40, scale: 0.95 }}
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -40, scale: 0.95 }}
-              className="relative w-full max-w-2xl glass-card-saturated bg-white shadow-[0_0_100px_rgba(130,195,65,0.2)] overflow-hidden rounded-[3rem]"
+              exit={{ opacity: 0, y: -20, scale: 0.95 }}
+              className="relative w-full max-w-2xl clay-card bg-white shadow-2xl overflow-hidden"
             >
-              <div className="p-8 flex items-center gap-5 border-b border-slate-100">
-                <Search className="w-8 h-8 text-accent animate-pulse" />
+              <div className="p-6 flex items-center gap-4 border-b border-gray-100">
+                <Search className="w-6 h-6 text-accent" />
                 <input 
                   ref={searchInputRef}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Query global records..."
-                  className="bg-transparent border-none outline-none text-2xl font-black text-navy-900 placeholder:text-slate-300 w-full tracking-tighter"
+                  placeholder="Quick jump to..."
+                  className="bg-transparent border-none outline-none text-xl font-medium text-navy-900 placeholder:text-gray-300 w-full"
                 />
                 <button 
                   onClick={() => setIsSearchOpen(false)}
-                  className="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest shadow-sm"
+                  className="px-2 py-1 rounded bg-gray-50 border border-gray-100 text-[10px] font-black text-gray-400 uppercase tracking-widest"
                 >
                   Esc
                 </button>
               </div>
               
-              <div className="p-6 max-h-[60vh] overflow-y-auto scrollbar-hide">
-                <div className="mb-10">
-                  <h4 className="text-[10px] font-black uppercase text-slate-300 tracking-[0.3em] px-5 mb-5">Strategic Fast-Jump</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="p-4 max-h-[60vh] overflow-y-auto">
+                <div className="mb-6">
+                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-4 mb-3">Quick Navigation</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {quickLinks.map(link => (
                       <Link key={link.label} href={link.href} onClick={() => setIsSearchOpen(false)}>
-                        <div className="flex items-center gap-4 p-5 rounded-[2rem] bg-slate-50/50 border border-slate-100 hover:bg-accent/5 hover:border-accent hover:shadow-xl transition-all group">
-                          <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-slate-300 group-hover:bg-accent group-hover:text-primary group-hover:scale-110 shadow-sm transition-all">
-                            <link.icon className="w-6 h-6" />
+                        <div className="flex items-center gap-3 p-4 rounded-2xl hover:bg-accent/5 hover:ring-1 hover:ring-accent/20 transition-all group">
+                          <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-accent group-hover:text-primary transition-all">
+                            <link.icon className="w-5 h-5" />
                           </div>
-                          <span className="text-xs font-black uppercase text-navy-900 tracking-widest">{link.label}</span>
+                          <span className="font-bold text-navy-900">{link.label}</span>
                         </div>
                       </Link>
                     ))}
@@ -267,25 +269,22 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
                 </div>
 
                 <div>
-                  <h4 className="text-[10px] font-black uppercase text-slate-300 tracking-[0.3em] px-5 mb-5">Operational Trace</h4>
-                  <div className="space-y-2">
-                    {['Quarterly Growth Audit', 'New Member Ingestion', 'Ledger Reconciliation'].map(item => (
-                      <div key={item} className="p-5 rounded-2xl flex items-center justify-between text-slate-500 hover:text-navy-900 hover:bg-slate-50/80 transition-all cursor-pointer group border border-transparent hover:border-slate-100">
-                        <div className="flex items-center gap-4">
-                           <Activity className="w-5 h-5 opacity-20 group-hover:opacity-100 group-hover:text-accent transition-all animate-float" />
-                           <span className="text-sm font-bold tracking-tight">{item}</span>
-                        </div>
-                        <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <h4 className="text-[10px] font-black uppercase text-gray-400 tracking-widest px-4 mb-3">Recent Searches</h4>
+                  <div className="space-y-1">
+                    {['Quarterly Report', 'New Medical Patient', 'Billing Summary Feb'].map(item => (
+                      <div key={item} className="p-4 rounded-xl flex items-center gap-3 text-gray-500 hover:text-navy-900 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <Activity className="w-4 h-4 opacity-30 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-sm font-medium">{item}</span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
               
-              <div className="p-6 bg-navy-900 border-t border-white/5 flex justify-between items-center">
-                <p className="text-[9px] font-black uppercase text-accent tracking-[0.4em]">Proben Tactical Search v2.0</p>
+              <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center">
+                <p className="text-[10px] font-bold text-gray-400 italic">Proben Universal Search v1.0</p>
                 <div className="flex items-center gap-3">
-                  <span className="text-[8px] font-black uppercase tracking-tighter text-white/20">Latency: 12ms</span>
+                  <span className="text-[8px] font-black uppercase tracking-tighter text-gray-300">Shortcut: ⌘K</span>
                 </div>
               </div>
             </motion.div>
