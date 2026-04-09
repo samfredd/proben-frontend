@@ -156,7 +156,7 @@ export default function AdminPatientHub() {
                           </div>
                         </div>
                         <div className="mt-6 flex items-center justify-between text-xs font-bold text-gray-400 uppercase tracking-widest border-t border-gray-50 pt-4">
-                           <span>{patient.blood_type || 'N/A'}</span>
+                           <span>Age: {patient.age || 'N/A'}</span>
                            <span className="flex items-center gap-1 text-navy-900">
                              Open File <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                            </span>

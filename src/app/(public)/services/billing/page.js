@@ -36,12 +36,12 @@ export default function BillingServices() {
               Healthcare-Grade Billing
             </div>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight mb-8">
-              Reclaim your revenue. <br />
-              <span className="text-accent">Secure your operations.</span>
+              IDD Billing Excellence. <br />
+              <span className="text-accent underline decoration-accent/10">Medicaid-Grade Results.</span>
             </h1>
             <p className="text-lg text-slate-600 mb-10 leading-relaxed font-medium">
               Stop losing revenue to administrative friction. Our specialized billing services are 
-              engineered specifically for high-volume group homes and complex care facilities.
+              engineered specifically for IDD residential providers and complex HCBS care facilities.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-4">
               <button className="w-full sm:w-auto bg-accent hover:bg-accent/90 text-black px-8 py-4 rounded-xl font-bold transition-all shadow-lg active:scale-[0.98]">
@@ -129,7 +129,7 @@ export default function BillingServices() {
             {[
               { title: "99% Clean Claim Rate", icon: CheckCircle2, desc: "Rigorous automated scrubbing for error-free submissions." },
               { title: "15-Day Payout Cycle", icon: Clock, desc: "Accelerating cash flow through high-speed EDI pipelines." },
-              { title: "Full HIPAA Compliance", icon: ShieldCheck, desc: "Military-grade data protection for your sensitive logs." },
+              { title: "Medicaid & HCBS Compliance", icon: ShieldCheck, desc: "Military-grade data protection aligned with state-specific IDD regulations." },
               { title: "Real-time Analytics", icon: BarChart3, desc: "Instant visibility into denials, aging, and payouts." },
               { title: "Dedicated Manager", icon: UserCheck, desc: "Direct access to revenue specialists for custom strategy." },
               { title: "Direct EDI Integration", icon: Zap, desc: "Zero-friction link between your EMR and major payers." }

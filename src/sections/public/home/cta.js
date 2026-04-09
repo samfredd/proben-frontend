@@ -40,8 +40,8 @@ export default function CTASection() {
               Request a Consultation
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/waitlist" className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-5 rounded-2xl font-bold transition-all backdrop-blur-md active:scale-[0.98]">
-              Join Software Waitlist
+            <Link href="/signup" className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-10 py-5 rounded-2xl font-bold transition-all backdrop-blur-md active:scale-[0.98]">
+              Register Now
             </Link>
           </div>
 

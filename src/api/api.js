@@ -61,6 +61,20 @@ const api = {
     });
     return handleResponse(response);
   },
+  patch: async (url, body, options = {}) => {
+    const isFormData = body instanceof FormData;
+    const headers = getHeaders({
+      ...(isFormData ? { 'Content-Type': null } : {}),
+      ...options.headers,
+    });
+
+    const response = await fetch(`${BASE_URL}${url}`, {
+      method: 'PATCH',
+      headers,
+      body: isFormData ? body : JSON.stringify(body),
+    });
+    return handleResponse(response);
+  },
   delete: async (url, options = {}) => {
     const response = await fetch(`${BASE_URL}${url}`, {
       method: 'DELETE',

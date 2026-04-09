@@ -106,26 +106,13 @@ export default function AdminPatientDetailPage() {
             <section className="bg-white border border-gray-50 shadow-sm rounded-[2.5rem] p-8">
               {/* Avatar */}
               <div className="flex items-center gap-5 mb-8">
-                {patient.profile_picture_url ? (
-                  <img
-                    src={patient.profile_picture_url}
-                    alt="Profile"
-                    className="w-20 h-20 rounded-2xl object-cover border border-gray-100 shadow-sm shrink-0"
-                  />
-                ) : (
                   <div className="w-20 h-20 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-3xl shrink-0">
                     {patient.first_name[0]}{patient.last_name[0]}
                   </div>
-                )}
                 <div>
                   <h2 className="text-2xl font-black text-navy-900 leading-tight">
                     {patient.first_name} {patient.last_name}
                   </h2>
-                  {patient.blood_type && (
-                    <span className="inline-block mt-2 px-3 py-1 bg-red-50 text-red-600 rounded-full text-xs font-bold border border-red-100">
-                      {patient.blood_type}
-                    </span>
-                  )}
                 </div>
               </div>
 
@@ -155,9 +142,9 @@ export default function AdminPatientDetailPage() {
                     <Calendar className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Date of Birth</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Age</p>
                     <p className="font-medium text-navy-900">
-                      {patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : 'N/A'}
+                      {patient.age || 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -174,17 +161,6 @@ export default function AdminPatientDetailPage() {
               </div>
             </section>
 
-            {patient.medical_history && (
-              <section className="bg-amber-50 border border-amber-100 rounded-[2.5rem] p-8">
-                <div className="flex items-center gap-3 mb-4 text-amber-700">
-                  <Activity className="w-5 h-5" />
-                  <h3 className="font-bold text-lg">Medical History</h3>
-                </div>
-                <p className="text-amber-900/80 leading-relaxed font-medium whitespace-pre-wrap">
-                  {patient.medical_history}
-                </p>
-              </section>
-            )}
           </div>
 
           {/* Documents Section */}

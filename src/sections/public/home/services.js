@@ -13,20 +13,27 @@ export default function ServicesSection() {
   ];
 
   return (
-    <section className="py-24 bg-white px-6 lg:px-[15vw]">
-      <div className="container mx-auto">
+    <section className="py-24 bg-white px-6 lg:px-[15vw] relative overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <img 
+          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
+          alt="Technical background"
+          className="w-full h-full object-cover opacity-[0.02] grayscale"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/80 to-slate-50/50" />
+      </div>
+
+      <div className="container mx-auto relative z-10">
         {/* Phase Header */}
-        <div className="flex flex-col items-center text-center gap-4 mb-20">
-          <div className="px-3 py-1 bg-accent/5 text-accent rounded-full text-[10px] font-bold uppercase tracking-widest border border-accent/10">
-            Phase 1: Available Now
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-12 max-w-4xl">
+          <div className="flex flex-col gap-8">
+            <span className="text-accent font-black uppercase tracking-[0.4em] text-[10px]">
+              Core Capabilities
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter leading-none">
+              Specialized Solutions for <span className="text-accent">IDD Providers.</span>
+            </h2>
           </div>
-          <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight">
-            Specialized <span className="text-accent">Billing Services</span>
-          </h2>
-          <p className="text-slate-500 max-w-2xl text-lg mt-4 leading-relaxed">
-            Operational excellence designed specifically for group home providers. 
-            We handle the complexity so you can focus on care.
-          </p>
         </div>
 
         {/* Feature Grid */}
@@ -69,8 +76,8 @@ export default function ServicesSection() {
                 <Link href="/services/billing" className="bg-accent hover:bg-accent-light text-navy-900 px-8 py-4 rounded-xl font-bold text-center transition-all">
                   Billing Workflow
                 </Link>
-                <Link href="/waitlist" className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-center transition-all backdrop-blur-sm flex items-center justify-center gap-2">
-                  Join Waitlist
+                <Link href="/signup" className="bg-white/10 hover:bg-white/20 text-white px-8 py-4 rounded-xl font-bold text-center transition-all backdrop-blur-sm flex items-center justify-center gap-2">
+                  Register Now
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>

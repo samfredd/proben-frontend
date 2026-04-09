@@ -64,13 +64,10 @@ export default function PatientDetailsPage() {
       last_name: patient.last_name || '',
       email: patient.email || '',
       phone: patient.phone || '',
-      dob: patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : '',
-      blood_type: patient.blood_type || '',
-      medical_history: patient.medical_history || ''
+      age: patient.age || ''
     });
     if (section === 'identity') setIsEditingIdentity(true);
     if (section === 'contact') setIsEditingContact(true);
-    if (section === 'medical') setIsEditingMedical(true);
   };
 
   const handleEditChange = (e) => {
@@ -89,8 +86,6 @@ export default function PatientDetailsPage() {
       await api.put(`/patients/${id}`, formPayload);
 
       setIsEditingIdentity(false);      setIsEditingContact(false);
-      setIsEditingMedical(false);
-      setProfilePic(null);
       fetchPatient();
     } catch (err) {
       setError(err.message || 'Failed to update patient.');
@@ -189,17 +184,9 @@ export default function PatientDetailsPage() {
                     <div className="flex items-start justify-between mb-8 relative z-10">
                        <div className="flex items-center gap-6">
                          <div className="relative">
-                            {patient.profile_picture_url ? (
-                              <img 
-                                src={patient.profile_picture_url} 
-                                alt="Profile" 
-                                className="w-20 h-20 rounded-[2rem] object-cover shadow-xl border-4 border-white"
-                              />
-                            ) : (
-                              <div className="w-20 h-20 rounded-[2rem] bg-navy-900 text-lime-500 flex items-center justify-center font-black text-3xl shadow-inner">
-                                {patient.first_name[0]}{patient.last_name[0]}
-                              </div>
-                            )}
+                            <div className="w-20 h-20 rounded-[2rem] bg-navy-900 text-lime-500 flex items-center justify-center font-black text-3xl shadow-inner">
+                              {patient.first_name[0]}{patient.last_name[0]}
+                            </div>
                             <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-lime-500 rounded-full border-2 border-white" />
                          </div>
                          <div>
@@ -216,18 +203,12 @@ export default function PatientDetailsPage() {
                        </button>
                     </div>
 
-                    <div className="space-y-4 pt-4 border-t border-gray-50">
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Blood Type</span>
-                          <span className="px-3 py-1 bg-red-500 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20">
-                             {patient.blood_type || 'Unknown'}
-                          </span>
-                       </div>
-                       <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Date of Birth</span>
-                          <span className="text-xs font-bold text-navy-900">{patient.dob ? new Date(patient.dob).toISOString().split('T')[0] : 'N/A'}</span>
-                       </div>
-                    </div>
+                     <div className="space-y-4 pt-4 border-t border-gray-50">
+                        <div className="flex items-center justify-between">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Age</span>
+                           <span className="text-xs font-bold text-navy-900">{patient.age || 'N/A'}</span>
+                        </div>
+                     </div>
                   </motion.div>
                 ) : (
                   <motion.div 
@@ -263,25 +244,16 @@ export default function PatientDetailsPage() {
                              />
                           </div>
                        </div>
-                       <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Birth Date</label>
-                          <input 
-                             name="dob" 
-                             type="date"
-                             value={editFormData.dob} 
-                             onChange={handleEditChange}
-                             className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-lime-500 outline-none text-xs font-bold"
-                          />
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Profile Pic</label>
-                          <input 
-                             type="file" 
-                             accept="image/*"
-                             onChange={(e) => setProfilePic(e.target.files[0])}
-                             className="w-full text-[10px] text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-[10px] file:font-black file:uppercase file:bg-lime-50 file:text-lime-600 hover:file:bg-lime-100"
-                          />
-                       </div>
+                        <div className="space-y-1">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Age</label>
+                           <input 
+                              name="age" 
+                              type="number"
+                              value={editFormData.age} 
+                              onChange={handleEditChange}
+                              className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-lime-500 outline-none text-xs font-bold"
+                           />
+                        </div>
                     </div>
 
                     <div className="flex gap-2 pt-2">
@@ -370,84 +342,6 @@ export default function PatientDetailsPage() {
               </AnimatePresence>
             </section>
 
-            {/* Medical History Section */}
-            <section className={`glass-panel p-8 relative group transition-all duration-500 ${isEditingMedical ? 'ring-2 ring-lime-500/20' : ''}`}>
-               <AnimatePresence mode="wait">
-                {!isEditingMedical ? (
-                  <motion.div 
-                    key="view"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                  >
-                     <div className="flex items-center justify-between mb-8">
-                        <div className="flex items-center gap-3">
-                           <Activity className="w-4 h-4 text-lime-600" />
-                           <h3 className="text-[10px] font-black uppercase tracking-widest text-gray-400">Clinical History</h3>
-                        </div>
-                        <button onClick={() => startEditing('medical')} className="text-gray-400 hover:text-lime-600 transition-colors"><Edit className="w-4 h-4" /></button>
-                     </div>
-                     <div className="p-5 bg-navy-900/5 rounded-2xl border border-navy-900/5">
-                        <div className="flex justify-between items-center mb-4 pb-4 border-b border-navy-900/5">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Blood Type</span>
-                           <span className="text-xs font-black text-navy-900 uppercase">{patient.blood_type || 'N/A'}</span>
-                        </div>
-                        <p className="text-sm font-medium text-navy-900/70 leading-relaxed whitespace-pre-wrap italic">
-                          "{patient.medical_history || 'No medical history recorded for this patient.'}"
-                        </p>
-                     </div>
-                  </motion.div>
-                ) : (
-                  <motion.div 
-                    key="edit"
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.05 }}
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center justify-between">
-                       <h3 className="text-[10px] font-black uppercase tracking-widest text-navy-900">Edit Clinical Records</h3>
-                       <button onClick={() => setIsEditingMedical(false)} className="text-gray-400 hover:text-navy-900"><X className="w-5 h-5" /></button>
-                    </div>
-                    <div className="space-y-4">
-                       <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Blood Type</label>
-                          <select
-                            name="blood_type"
-                            value={editFormData.blood_type}
-                            onChange={handleEditChange}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-lime-500 outline-none text-xs font-bold"
-                          >
-                            <option value="">Unknown</option>
-                            <option value="A+">A+</option>
-                            <option value="A-">A-</option>
-                            <option value="B+">B+</option>
-                            <option value="B-">B-</option>
-                            <option value="AB+">AB+</option>
-                            <option value="AB-">AB-</option>
-                            <option value="O+">O+</option>
-                            <option value="O-">O-</option>
-                          </select>
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-gray-400">Medical Notes</label>
-                          <textarea 
-                             name="medical_history" 
-                             value={editFormData.medical_history} 
-                             onChange={handleEditChange}
-                             rows="5"
-                             className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none focus:ring-2 focus:ring-lime-500 outline-none text-sm font-medium leading-relaxed"
-                          />
-                       </div>
-                    </div>
-                    <div className="flex gap-2">
-                       <button onClick={() => setIsEditingMedical(false)} className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:bg-gray-100 rounded-xl transition-colors">Cancel</button>
-                       <button onClick={() => handleSave('medical')} className="flex-2 px-8 py-4 bg-navy-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-navy-900/20 active:scale-95 transition-all">Save Records</button>
-                    </div>
-                  </motion.div>
-                )}
-               </AnimatePresence>
-            </section>
           </div>
 
           {/* Documents Section */}

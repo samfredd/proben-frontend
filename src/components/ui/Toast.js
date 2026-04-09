@@ -1,7 +1,8 @@
 'use client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
-import { useToast } from '@/context/ToastContext';
+import { useToast as useToastHook } from '@/context/ToastContext';
+export const useToast = useToastHook;
 
 export default function ToastContainer() {
   const { toasts, removeToast } = useToast();

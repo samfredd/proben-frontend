@@ -22,8 +22,8 @@ export default function FooterSection() {
             />
           </Link>
           <p className="text-slate-400 text-sm leading-relaxed max-w-sm">
-            Professional billing excellence and operational software for the future of group home care. 
-            Designed for reliability, built for growth.
+            Specialized billing excellence and operational software for the future of IDD and HCBS residential care. 
+            Designed for reliability, built for compliance.
           </p>
           <div className="flex gap-4">
              {/* Simple social indicator */}
@@ -39,8 +39,10 @@ export default function FooterSection() {
           <ul className="flex flex-col gap-4 text-slate-400 text-sm">
             {[
               { name: 'Billing Services', link: '/services/billing' },
-              { name: 'Join Waitlist', link: '/waitlist' },
-              { name: 'Consultation', link: '/contact' }
+              { name: 'Employee Scheduling (Coming Soon)', link: '/employee-scheduling' },
+              { name: 'Human Resources (Coming Soon)', link: '/human-resources' },
+              { name: 'EMR Systems (Coming Soon)', link: '/electronic-medical-record' },
+              { name: 'Join Waitlist', link: '/waitlist' }
             ].map((link) => (
               <li key={link.name}>
                 <Link href={link.link} className="hover:text-accent transition-colors">{link.name}</Link>
@@ -88,9 +90,9 @@ export default function FooterSection() {
       {/* Bottom Bar */}
       <div className="pt-12 border-t border-accent/10 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] relative z-10">
         <div className="flex flex-col gap-2">
-          <p>© 2026 Proben Group Home Consultants. <span className="text-accent/50">HIPAA Protected Systems.</span></p>
+          <p>© 2026 Proben IDD Consultants. <span className="text-accent/50">HIPAA Protected Systems.</span></p>
           <p className="normal-case tracking-normal max-w-2xl mt-4 opacity-50 text-[11px] leading-relaxed">
-            <strong>Disclaimer:</strong> Proben is a business consulting and administrative services firm. Our platform is a coordination and billing tool designed for facility administrators. We do not provide medical advice or treatment. All clinical responsibility remains with the provider.
+            <strong>Disclaimer:</strong> Proben is an Intellectual and Developmental Disabilities (IDD) administrative services and consulting firm. Our platform is an HCBS coordination and billing tool designed for facility administrators. We do not provide clinical treatment.
           </p>
         </div>
         <div className="flex gap-8">

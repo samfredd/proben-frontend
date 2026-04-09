@@ -20,7 +20,7 @@ const SLIDES = [
     title: "Billing Excellence.",
     highlight: "Care Redefined.",
     description:
-      "Specialized revenue cycle management for group homes. Improve reimbursement reliability with healthcare-grade operational consulting.",
+      "Specialized Medicaid and HCBS billing for IDD providers. Improve reimbursement reliability with healthcare-grade operational consulting.",
     metric: "99% Clean Claim Rate",
     ctaPrimary: { text: "Book Consultation", href: "/contact" },
     ctaSecondary: { text: "Explore Services", href: "/services/billing" },
@@ -31,9 +31,9 @@ const SLIDES = [
     title: "The Future of Care.",
     highlight: "Built Today.",
     description:
-      "Scheduling, HR management, and patient portals designed specifically for group home operations.",
+      "Scheduling, HR management, and person-centered portals designed specifically for IDD residential operations.",
     metric: "Digital-First Ops",
-    ctaPrimary: { text: "Join Waitlist", href: "/waitlist" },
+    ctaPrimary: { text: "Register Now", href: "/signup" },
     ctaSecondary: { text: "Explore Services", href: "/services/billing" },
     bgImage: "https://images.unsplash.com/photo-1550831107-1553da8c8464?auto=format&fit=crop&q=80&w=2000",
   },
@@ -78,12 +78,10 @@ export default function Hero() {
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            <Image 
+            <img 
               src={slide.bgImage}
               alt="Professional healthcare management"
-              fill
-              priority
-              className="object-cover brightness-[0.65]"
+              className="w-full h-full object-cover brightness-[0.65]"
             />
           </motion.div>
         </AnimatePresence>
@@ -91,7 +89,7 @@ export default function Hero() {
         {/* Dynamic Glows for "Pop" */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl opacity-30 pointer-events-none z-10">
           <div className="absolute top-1/4 -left-1/4 w-[500px] h-[500px] bg-accent/20 blur-[130px] rounded-full animate-pulse" />
-          <div className="absolute bottom-1/4 -right-1/4 w-[400px] h-[400px] bg-blue-600/10 blur-[120px] rounded-full animate-pulse decoration-delay-2000" />
+          <div className="absolute bottom-1/4 -right-1/4 w-[400px] h-[400px] bg-accent/5 blur-[120px] rounded-full animate-pulse decoration-delay-2000" />
         </div>
         
         {/* Dark Refined Gradient Overlays (Softer) */}
@@ -172,7 +170,7 @@ export default function Hero() {
           </div>
 
           <div className="flex items-center gap-5 p-4 md:p-8 bg-white/[0.02] border-r border-white/5 rounded-2xl group transition-colors hover:bg-white/5">
-            <div className="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 ring-1 ring-blue-500/30 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center text-accent ring-1 ring-accent/20 group-hover:scale-110 transition-transform">
               <Layout className="w-6 h-6" />
             </div>
             <div>
@@ -182,7 +180,7 @@ export default function Hero() {
           </div>
 
           <div className="flex items-center gap-5 p-4 md:p-8 bg-white/[0.02] rounded-2xl group transition-colors hover:bg-white/5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-600/20 flex items-center justify-center text-emerald-400 ring-1 ring-emerald-500/30 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-xl bg-accent/5 flex items-center justify-center text-accent/60 ring-1 ring-accent/20 group-hover:scale-110 transition-transform">
               <Lock className="w-6 h-6" />
             </div>
             <div>

@@ -1,6 +1,5 @@
 import React from "react";
 import Navbar from "@/components/layout/navbar";
-import Image from "next/image";
 import FooterSection from "@/sections/public/home/footer";
 import { ShieldCheck, Target, Users, BookOpen, HeartPulse, ArrowRight } from "lucide-react";
 
@@ -8,7 +7,7 @@ export default function AboutPage() {
   const values = [
     { 
       title: "Operational Excellence", 
-      desc: "We believe that group homes deserve the same enterprise-grade infrastructure as large hospitals.",
+      desc: "We believe that IDD residential homes deserve same enterprise-grade infrastructure as large healthcare networks.",
       icon: Target
     },
     { 
@@ -18,7 +17,7 @@ export default function AboutPage() {
     },
     { 
       title: "Care-Centric Growth", 
-      desc: "By solving the administrative burden, we allow providers to focus on what matters: the residents.",
+      desc: "By solving the administrative burden, we allow providers to focus on what matters: person-centered care for residents.",
       icon: HeartPulse
     }
   ];
@@ -42,8 +41,8 @@ export default function AboutPage() {
               <span className="text-accent underline underline-offset-8 decoration-slate-100 italic">for humans.</span>
             </h1>
             <p className="text-xl text-slate-600 mb-10 leading-relaxed font-medium">
-              Proben was founded by healthcare operators who knew the administrative friction 
-              stifling group home care was optional. We’re building the logic that lets your team lead with care.
+              Proben IDD Consultants was founded by operators who knew the administrative friction 
+              stifling IDD and HCBS care was optional. We’re building the logic that lets your team lead with care.
             </p>
             <div className="flex items-center gap-4">
               <div className="w-12 h-1 bg-accent rounded-full"></div>
@@ -53,12 +52,10 @@ export default function AboutPage() {
 
           {/* Right: Immersive Image Frame */}
           <div className="relative aspect-square rounded-[3rem] overflow-hidden shadow-2xl border-[12px] border-slate-50 rotate-2 group hover:rotate-0 transition-transform duration-700">
-            <Image 
+            <img 
               src="https://images.unsplash.com/photo-1516841273335-e39b37888115?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0"
               alt="Professional collaboration"
-              fill
-              priority
-              className="object-cover"
+              className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-accent/20 via-transparent to-transparent opacity-60 pointer-events-none" />
           </div>
@@ -74,11 +71,10 @@ export default function AboutPage() {
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-accent/10 blur-[80px] rounded-full" />
             
             <div className="h-80 bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden relative group">
-              <Image 
+              <img 
                 src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1500"
                 alt="Modern workspace"
-                fill
-                className="object-cover brightness-95 group-hover:scale-110 transition-transform duration-700"
+                className="w-full h-full object-cover brightness-95 group-hover:scale-110 transition-transform duration-700"
               />
               <div className="absolute bottom-6 left-6 font-bold text-white drop-shadow-md">Est. 2026</div>
             </div>
@@ -97,18 +93,18 @@ export default function AboutPage() {
             </h2>
             <p className="text-lg text-slate-600 leading-relaxed font-medium">
               Most software for residential care is shrunken-down hospital systems. 
-              We took the opposite approach. We architect from the group home floor up—understanding 
-              the specific codes, staffing ratios, and regulatory nuances unique to this industry.
+              We took the opposite approach. We architect from the IDD facility floor up—understanding 
+              the specific HCBS codes, DSP staffing ratios, and regulatory nuances unique to this industry.
             </p>
             
             <div className="relative p-10 bg-white border border-slate-200 rounded-[2.5rem] shadow-xl">
               <div className="absolute -top-6 -right-6 w-12 h-12 bg-accent rounded-full flex items-center justify-center text-black font-black text-2xl shadow-lg ring-4 ring-white">"</div>
-              <p className="italic text-xl text-slate-800 leading-relaxed font-medium mb-6">"Group homes are the invisible backbone of US care. We’re finally giving them the authority tools they deserve."</p>
+              <p className="italic text-xl text-slate-800 leading-relaxed font-medium mb-6">"IDD residential homes are the invisible backbone of US care. We’re finally giving them the authority tools they deserve."</p>
               <div className="flex items-center gap-4">
                 <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">— Proben Leadership</p>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">— Proben IDD Consultants Leadership</p>
               </div>
             </div>
           </div>
