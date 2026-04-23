@@ -268,7 +268,7 @@ const AGREEMENTS = [
   { id: 'agreedMedicalLiability',       label: 'I accept the Medical Liability Disclaimer' },
 ];
 
-function LegalStep({ accountData, onBack, onSuccess }) {
+function LegalStep({ accountData, onSuccess }) {
   const { loginWithData } = useAuth();
   const [agreed, setAgreed] = useState({ agreedTos: false, agreedTelemedicineConsent: false, agreedMedicalLiability: false });
   const [loading, setLoading] = useState(false);
@@ -299,10 +299,6 @@ function LegalStep({ accountData, onBack, onSuccess }) {
 
   return (
     <div className="max-w-lg mx-auto w-full">
-      <button onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#0a1128] transition-colors flex items-center gap-1.5 mb-6">
-        <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back
-      </button>
-
       <div className="mb-8">
         <h2 className="text-3xl font-black text-[#0a1128] tracking-tight mb-2">Required agreements</h2>
         <p className="text-gray-500 font-medium text-sm">Please review and accept the following before creating your account.</p>
@@ -436,7 +432,7 @@ function PlanCard({ service, isPopular, isSelected, isLoading, onSelect }) {
   );
 }
 
-function PlanStep({ onBack }) {
+function PlanStep() {
   const [services, setServices]           = useState([]);
   const [servicesLoading, setServicesLoading] = useState(true);
   const [selectedId, setSelectedId]       = useState(null);
@@ -471,9 +467,6 @@ function PlanStep({ onBack }) {
   return (
     <div className="max-w-4xl mx-auto w-full">
       <div className="mb-8">
-        <button onClick={onBack} className="text-xs font-bold text-gray-400 hover:text-[#0a1128] transition-colors flex items-center gap-1.5 mb-5">
-          <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back
-        </button>
         <h2 className="text-3xl font-black text-[#0a1128] tracking-tight mb-1">Choose your plan</h2>
         <p className="text-gray-500 font-medium text-sm">Upgrade or cancel anytime. No long-term commitment.</p>
       </div>
@@ -592,25 +585,42 @@ function OnboardingContent() {
               {step === 'legal' && (
                 <LegalStep
                   accountData={accountData}
-                  onBack={() => goTo('account')}
-                  onSuccess={(newUser) => goTo('welcome')}
+                  onSuccess={() => goTo('welcome')}
                 />
               )}
               {step === 'welcome' && (
                 <WelcomeStep user={user} onNext={() => goTo('plan')} />
               )}
               {step === 'plan' && (
-                <PlanStep onBack={() => goTo('welcome')} />
+                <PlanStep />
               )}
             </motion.div>
           </AnimatePresence>
         </div>
 
         {/* Footer progress */}
-        <div className="px-6 md:px-12 lg:px-16 py-6 border-t border-gray-50 flex items-center justify-between">
-          <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest">
-            Step {steps.indexOf(step) + 1} of {steps.length}
-          </p>
+        <div className="px-6 md:px-12 lg:px-16 py-5 border-t border-gray-100 flex items-center justify-between">
+          {/* Back navigation */}
+          {(() => {
+            const idx = steps.indexOf(step);
+            if (idx === 0) return (
+              <Link href="/login" className="text-xs font-bold text-gray-400 hover:text-[#0a1128] transition-colors flex items-center gap-1.5">
+                <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Login
+              </Link>
+            );
+            if (step === 'welcome' && !user) return <div />;
+            return (
+              <button
+                type="button"
+                onClick={() => goTo(steps[idx - 1])}
+                className="text-xs font-bold text-gray-400 hover:text-[#0a1128] transition-colors flex items-center gap-1.5"
+              >
+                <ChevronRight className="w-3.5 h-3.5 rotate-180" /> Back
+              </button>
+            );
+          })()}
+
+          {/* Progress dots */}
           <div className="flex gap-1.5">
             {steps.map((s, i) => {
               const cur = steps.indexOf(step);
