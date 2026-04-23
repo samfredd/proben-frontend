@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import api from '@/api/api';
 import { Users, UserPlus, Trash2, Mail, Shield, CheckCircle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import TrialGate from '@/components/ui/TrialGate';
 
 export default function TeamPage() {
   const [members, setMembers] = useState([]);
@@ -57,6 +58,7 @@ export default function TeamPage() {
   };
 
   return (
+    <TrialGate feature="Team Management">
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
@@ -207,5 +209,6 @@ export default function TeamPage() {
         )}
       </AnimatePresence>
     </div>
+    </TrialGate>
   );
 }

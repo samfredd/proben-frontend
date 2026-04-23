@@ -1,6 +1,7 @@
 'use client';
 import { Suspense, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { SubscriptionProvider } from '@/context/SubscriptionContext';
 import Sidebar from '@/components/layout/sidebar';
 import { useSidebar } from '@/context/SidebarContext';
 
@@ -24,6 +25,7 @@ export default function ClientLayout({ children }) {
 
 
   return (
+    <SubscriptionProvider>
     <div className="flex h-screen bg-[#f8fafc] relative overflow-hidden">
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -43,5 +45,6 @@ export default function ClientLayout({ children }) {
         </main>
       </div>
     </div>
+    </SubscriptionProvider>
   );
 }

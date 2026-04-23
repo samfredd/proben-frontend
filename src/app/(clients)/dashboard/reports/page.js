@@ -13,6 +13,7 @@ import {
   ClipboardList
 } from 'lucide-react';
 import DashboardHeader from '@/components/layout/DashboardHeader';
+import TrialGate from '@/components/ui/TrialGate';
 
 export default function ClientReports() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -25,6 +26,7 @@ export default function ClientReports() {
   ];
 
   return (
+    <TrialGate feature="Reports & Analytics">
     <div className="flex-1 bg-transparent min-h-screen text-navy-900">
       <DashboardHeader title="My Health Reports" subtitle="Access your personalized medical summaries and clinical findings" />
       
@@ -123,5 +125,6 @@ export default function ClientReports() {
         </section>
       </main>
     </div>
+    </TrialGate>
   );
 }

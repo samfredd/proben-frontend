@@ -6,6 +6,7 @@ import { Receipt, FileText, Download, ArrowRight, CreditCard } from 'lucide-reac
 import { useAuth } from '@/context/AuthContext';
 import InvoiceDownloadButton from '@/components/payments/InvoiceDownloadButton';
 import { getInvoiceAmount, isHostedInvoiceFileUrl } from '@/utils/invoices';
+import TrialGate from '@/components/ui/TrialGate';
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState([]);
@@ -53,6 +54,7 @@ export default function InvoicesPage() {
   };
 
   return (
+    <TrialGate feature="Invoices">
     <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-8">
       <div>
         <h1 className="text-3xl font-extrabold text-navy-900 tracking-tight">Billing & Invoices</h1>
@@ -141,5 +143,6 @@ export default function InvoicesPage() {
         )}
       </div>
     </motion.div>
+    </TrialGate>
   );
 }

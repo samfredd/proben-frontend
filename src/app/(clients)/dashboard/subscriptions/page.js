@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import api from '@/api/api';
 import { motion } from 'framer-motion';
 import Modal from '@/components/ui/Modal';
-import { Activity, CheckCircle2, XCircle, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import { Activity, CheckCircle2, XCircle, ArrowRight, Zap, ShieldCheck, Loader2, AlertTriangle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { getActiveSubscription, getSubscriptionDisplayName, getSubscriptionRenewalDate, getSubscriptionServices } from '@/utils/subscriptions';
@@ -13,6 +13,8 @@ function SubscriptionsContent() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const searchParams = useSearchParams();
   const activeSub = getActiveSubscription(subscription);
   const activePlanName = getSubscriptionDisplayName(activeSub);
@@ -35,6 +37,20 @@ function SubscriptionsContent() {
       console.error('Failed to fetch subscription data', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!activeSub) return;
+    try {
+      setCancelling(true);
+      await api.delete(`/subscriptions/${activeSub.id}`);
+      setCancelConfirm(false);
+      await fetchData();
+    } catch (err) {
+      alert('Failed to cancel subscription: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -185,14 +201,52 @@ function SubscriptionsContent() {
                 {activeRenewalLabel ? 'Automated billing via Paystack Secure Checkout.' : 'Your organization currently has an active plan on file.'}
               </p>
            </div>
-           <button className="px-10 py-5 bg-white text-navy-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-lime-400 transition-all shadow-2xl shadow-white/5 shrink-0">
-             Manage Payments
+           <button
+             onClick={() => setCancelConfirm(true)}
+             className="px-10 py-5 bg-white text-navy-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-red-50 hover:text-red-600 transition-all shadow-2xl shadow-white/5 shrink-0"
+           >
+             Cancel Subscription
            </button>
         </div>
       )}
 
-      <Modal 
-        isOpen={!!selectedPlan} 
+      <Modal
+        isOpen={cancelConfirm}
+        onClose={() => setCancelConfirm(false)}
+        title="Cancel Subscription"
+      >
+        <div className="space-y-6 py-4">
+          <div className="flex items-start gap-4 p-6 bg-red-50 rounded-2xl border border-red-100">
+            <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-black text-navy-900">Are you sure you want to cancel?</p>
+              <p className="text-sm text-gray-500 font-medium mt-1">
+                Your <span className="font-bold text-navy-900">{activePlanName}</span> plan will remain active until{' '}
+                {activeRenewalLabel || 'the end of the current billing period'}, then will not renew.
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setCancelConfirm(false)}
+              disabled={cancelling}
+              className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest bg-gray-50 text-navy-900 hover:bg-gray-100 transition-colors disabled:opacity-50"
+            >
+              Keep Plan
+            </button>
+            <button
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="flex-1 py-4 rounded-2xl font-black text-xs uppercase tracking-widest bg-red-500 text-white hover:bg-red-600 transition-colors shadow-xl shadow-red-500/20 disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Yes, Cancel'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!selectedPlan}
         onClose={() => setSelectedPlan(null)}
         title="Package Details"
       >

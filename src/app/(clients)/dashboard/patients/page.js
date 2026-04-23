@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import DashboardHeader from '@/components/layout/DashboardHeader';
 import api from '@/api/api';
+import { useSubscription } from '@/context/SubscriptionContext';
+import DatePicker from '@/components/ui/DatePicker';
 
 export default function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,6 +25,9 @@ export default function PatientsPage() {
   const [loading, setLoading] = useState(true);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const { isTrialing } = useSubscription();
+  const TRIAL_PATIENT_LIMIT = 5;
+  const trialLimitReached = isTrialing && patients.length >= TRIAL_PATIENT_LIMIT;
   
   const fetchPatients = async () => {
     try {
@@ -63,13 +68,23 @@ export default function PatientsPage() {
                </div>
            </div>
             <div className="flex gap-4 w-full md:w-auto">
-              <button 
-                onClick={() => setIsAddModalOpen(true)}
-                className="px-10 py-5 bg-navy-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-navy-800 transition-all shadow-xl shadow-navy-900/20 flex items-center justify-center gap-2 active:scale-95"
-              >
-                 <Plus className="w-4 h-4" />
-                 Add Patient
-              </button>
+              {trialLimitReached ? (
+                <Link
+                  href="/dashboard/subscriptions"
+                  className="px-10 py-5 bg-amber-400 text-navy-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-300 transition-all shadow-xl shadow-amber-400/20 flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  Upgrade to Add More
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="px-10 py-5 bg-navy-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-navy-800 transition-all shadow-xl shadow-navy-900/20 flex items-center justify-center gap-2 active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Patient
+                </button>
+              )}
             </div>
         </section>
 
@@ -265,16 +280,12 @@ function AddPatientModal({ onClose, onSuccess }) {
               </div>
              
               <div>
-                 <label className="block text-sm font-bold text-navy-900 mb-1">Date of birth</label>
-                 <input 
-                   type="Date" 
-                   name="Date of birth"
-                   value={formData.age}
-                   onChange={handleChange}
-                   className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                   placeholder="25"
-                 />
-               </div>
+                <label className="block text-sm font-bold text-navy-900 mb-1">Date of Birth</label>
+                <DatePicker
+                  value={formData.age}
+                  onChange={(val) => setFormData({ ...formData, age: val })}
+                />
+              </div>
             
              
             </div>

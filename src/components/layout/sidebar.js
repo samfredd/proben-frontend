@@ -20,7 +20,8 @@ import {
   Video,
   Clock,
   Activity,
-  Building2
+  Building2,
+  History,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -91,6 +92,7 @@ export default function Sidebar({ role }) {
       group: 'Finance',
       items: [
         { name: 'Billing Hub', href: '/dashboard/payments', icon: CreditCard },
+        { name: 'Subscription History', href: '/dashboard/subscription-history', icon: History },
       ]
     },
     {
