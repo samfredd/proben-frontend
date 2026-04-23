@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
-      router.push('/dashboard');
+      router.push('/onboarding');
       return { success: true };
     } catch (error) {
       console.error('Signup error:', error);
