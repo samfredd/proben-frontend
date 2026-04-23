@@ -165,7 +165,7 @@ function AccountStep({ initialEmail, onNext }) {
   const [form, setForm] = useState({
     organizationName: '', contactPerson: '',
     email: initialEmail || '', phone: '',
-    country: 'United States', password: '',
+    country: 'United States', password: '', confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -178,11 +178,16 @@ function AccountStep({ initialEmail, onNext }) {
     if (!form.email.trim())            e.email            = 'Required';
     if (!form.phone.trim())            e.phone            = 'Required';
     if (!form.password || form.password.length < 8) e.password = 'Minimum 8 characters';
+    if (form.confirmPassword !== form.password) e.confirmPassword = 'Passwords do not match';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
-  const handleNext = () => { if (validate()) onNext(form); };
+  const handleNext = () => {
+    if (!validate()) return;
+    const { confirmPassword, ...payload } = form;
+    onNext(payload);
+  };
 
   return (
     <div className="max-w-lg mx-auto w-full">
@@ -214,22 +219,27 @@ function AccountStep({ initialEmail, onNext }) {
           </Field>
         </div>
 
+        <Field label="Country">
+          <div className="flex items-center rounded-2xl border border-gray-200 bg-gray-50/80 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#0a1128]/8 focus-within:border-[#0a1128] transition-all">
+            <Globe className="w-4 h-4 text-gray-400 shrink-0 ml-4" />
+            <select
+              value={form.country}
+              onChange={e => set('country', e.target.value)}
+              className="flex-1 px-3 py-3.5 bg-transparent font-bold text-[#0a1128] text-sm outline-none appearance-none"
+            >
+              {COUNTRIES.map(c => <option key={c}>{c}</option>)}
+            </select>
+          </div>
+        </Field>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Country">
-            <div className="flex items-center rounded-2xl border border-gray-200 bg-gray-50/80 focus-within:bg-white focus-within:ring-2 focus-within:ring-[#0a1128]/8 focus-within:border-[#0a1128] transition-all">
-              <Globe className="w-4 h-4 text-gray-400 shrink-0 ml-4" />
-              <select
-                value={form.country}
-                onChange={e => set('country', e.target.value)}
-                className="flex-1 px-3 py-3.5 bg-transparent font-bold text-[#0a1128] text-sm outline-none appearance-none"
-              >
-                {COUNTRIES.map(c => <option key={c}>{c}</option>)}
-              </select>
-            </div>
-          </Field>
           <Field label="Password">
             <TextInput icon={KeyRound} type="password" value={form.password} onChange={e => set('password', e.target.value)} placeholder="Minimum 8 characters" error={errors.password} />
             {errors.password && <p className="text-[11px] text-red-500 font-bold pl-1">{errors.password}</p>}
+          </Field>
+          <Field label="Confirm Password">
+            <TextInput icon={KeyRound} type="password" value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} placeholder="Repeat your password" error={errors.confirmPassword} />
+            {errors.confirmPassword && <p className="text-[11px] text-red-500 font-bold pl-1">{errors.confirmPassword}</p>}
           </Field>
         </div>
       </div>
