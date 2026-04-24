@@ -70,7 +70,7 @@ export default function PatientsPage() {
             <div className="flex gap-4 w-full md:w-auto">
               {trialLimitReached ? (
                 <Link
-                  href="/dashboard/subscriptions"
+                  href="/dashboard/payments"
                   className="px-10 py-5 bg-amber-400 text-navy-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-amber-300 transition-all shadow-xl shadow-amber-400/20 flex items-center justify-center gap-2 active:scale-95"
                 >
                   <Plus className="w-4 h-4" />

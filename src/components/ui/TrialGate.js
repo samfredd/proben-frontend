@@ -43,7 +43,7 @@ export default function TrialGate({ children, feature = 'This feature' }) {
         {/* CTA */}
         <div className="space-y-3">
           <Link
-            href="/dashboard/subscriptions"
+            href="/dashboard/payments"
             className="w-full inline-flex items-center justify-center gap-2 px-8 py-5 bg-navy-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-lime-500 hover:text-navy-900 transition-all shadow-xl shadow-navy-900/10 group"
           >
             View Plans

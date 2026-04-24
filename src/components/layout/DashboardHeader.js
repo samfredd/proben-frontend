@@ -67,7 +67,7 @@ export default function DashboardHeader({ title = 'Dashboard', subtitle = 'Welco
   ] : [
     { label: 'My Patients', href: '/dashboard/patients', icon: Users },
     { label: 'Support Center', href: '/dashboard/support', icon: Activity },
-    { label: 'Subscription', href: '/dashboard/subscriptions', icon: Star },
+    { label: 'Billing Hub', href: '/dashboard/payments', icon: Star },
   ];
 
   const mockNotifs = [

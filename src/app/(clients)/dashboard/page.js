@@ -26,7 +26,7 @@ const staggerChildren = {
 
 export default function ClientDashboard() {
   const router = useRouter();
-  const plansPageHref = '/dashboard/subscriptions';
+  const plansPageHref = '/dashboard/payments';
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
   const [agreements, setAgreements] = useState({ tos: false, telemedicine: false, liability: false });
@@ -131,7 +131,7 @@ export default function ClientDashboard() {
   const quickActions = [
     { id: 'register_patient', name: 'Add Patient',   icon: Plus,       bg: 'bg-primary', text: 'text-white',     iconBg: 'bg-white/15', href: '/dashboard/patients' },
     { id: 'plans',   name: 'Subscription',  icon: Star,       bg: 'bg-accent',  text: 'text-primary',   iconBg: 'bg-white/30', href: plansPageHref },
-    { id: 'billing', name: 'Billing Hub',   icon: CreditCard, bg: 'bg-lime-100',text: 'text-lime-800',  iconBg: 'bg-lime-200' },
+    { id: 'billing', name: 'Billing Hub',   icon: CreditCard, bg: 'bg-lime-100',text: 'text-lime-800',  iconBg: 'bg-lime-200', href: '/dashboard/payments?view=payments' },
     { id: 'support', name: 'Help Center',   icon: HelpCircle, bg: 'bg-white',   text: 'text-navy-900',  iconBg: 'bg-navy-900/5' },
   ];
 
@@ -179,7 +179,7 @@ export default function ClientDashboard() {
             ) : (
               <p className="text-center text-xs text-navy-400 font-medium">Browse our healthcare packages to get started.</p>
             )}
-            <Link href="/dashboard/subscriptions" className="block w-full">
+            <Link href="/dashboard/payments" className="block w-full">
               <button className="clay-card w-full py-4 bg-lime-50 text-navy-900 font-black text-sm border border-lime-200 hover:bg-lime-100 transition-colors active:scale-[0.98]">
                 {activeSub ? 'Manage Subscriptions' : 'Browse Packages'}
               </button>

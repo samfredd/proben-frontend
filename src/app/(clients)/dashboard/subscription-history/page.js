@@ -114,7 +114,7 @@ export default function SubscriptionHistoryPage() {
             <h3 className="text-xl font-black text-navy-900 mb-2">No subscription history yet</h3>
             <p className="text-gray-500 font-medium mb-8">Pick a plan to get started.</p>
             <Link
-              href="/dashboard/subscriptions"
+              href="/dashboard/payments"
               className="inline-flex items-center gap-2 px-8 py-4 bg-navy-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-lime-500 hover:text-navy-900 transition-all shadow-xl shadow-navy-900/10"
             >
               View Plans <ArrowRight className="w-4 h-4" />
